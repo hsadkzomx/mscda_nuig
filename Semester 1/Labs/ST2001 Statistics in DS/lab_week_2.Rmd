@@ -1,0 +1,531 @@
+---
+title: "Introduction to R"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+```
+
+## R as a Calculator
+
+We all are familiar with using a calculator. $\texttt{R}$ can do much more than a calculator. However, to get familiar with $\texttt{R}$ we are going to perform the some of the common mathematical operations.
+
+The following code computes the answer to 2 + 2. Change it so that it computes 5 + 5.
+
+```{r addition, exercise=TRUE}
+2 + 2
+```
+
+```{r addition-solution}
+5 + 5
+```
+
+Now, in the following box, write code to compute 10-5.  
+
+```{r subtraction, exercise=TRUE}
+10 - 5
+```
+
+In $\texttt{R}$, the multiplication operator is $\texttt{*}$. Now write code to compute 5 multiplied by 2.
+
+```{r multiplication, exercise=TRUE}
+5 * 2
+```
+
+In $\texttt{R}$, the division operator is $\texttt{/}$. Write code to compute 10 divided by 5.
+
+```{r division, exercise=TRUE}
+10 / 5
+```
+
+Mathematical expression $3^2$ is read as "three to the power two". In $\texttt{R}$, this can be computed as `3^2`. Now, change it to compute `3 ^ {-1}`.
+
+```{r power, exercise=TRUE}
+3 ^ 2
+```
+
+```{r power-solution}
+3 ^ (-1)
+```
+
+
+Mathematical expression $\sqrt{4}$ is read as "square root of four". In $\texttt{R}$, you can compute the value of it using the function $\texttt{sqrt()}$. So to compute the square root of 4 you can write code as `sqrt(4)`. Now change it to compute square root of -1. Notice, whether you get what you expected or not. 
+
+```{r squareroot, exercise=TRUE}
+sqrt(4)
+```
+
+
+```{r squareroot-solution}
+sqrt(-1)
+```
+
+
+There are many mathematical constants that we use often in calculation. One of them is $\pi$. In $\texttt{R}$, you do not need to remember the value of $\pi$. You can simply type `pi` in your code to get the value of $\pi = 3.14159\ldots$.
+
+
+```{r pi, exercise=TRUE}
+pi
+```
+
+There are some issues we need to be careful of when using computers for calculations, they are not entirely accurate as there are limits due to how they store numbers.  Let's consider calculating the trigonometric functions sine, cosine, tangent using the $\texttt{R}$ functions `sin()`, `cos()` and `tan()`, respectively. To get the value of 
+$\sin(\pi)$, in $\texttt{R}$, you simply use the code `sin(pi)` which applies the `sin()` function to `pi`. Now, change the code to compute $\sin(0.5\pi)$
+
+
+```{r sin, exercise=TRUE}
+sin(pi)
+```
+
+```{r sin-solution}
+sin(0.5 * pi)
+```
+
+
+In the last example, you got the value $\sin(\pi)$ = `1.224606e-16`. What does this mean? As $\sin(pi)$ should be zero.
+
+In scientific notation, the number "123456789" can be written as 1.234568 $\times 10^8$. In $\texttt{R}$, 10 is replaced with $e$. So 123456789 is shown as `1.234568e+8` when shown in scientific notation. 
+
+So `1.224606e-16` is equal to `r format(sin(pi), scientific = FALSE)`, which is essentially equal to zero. This unexpected results are due to the limits of machine representation of numbers. So you should be aware that the more calculations you do in software the more such errors can build up, so you need to be careful(!) and do not try to do things like checking  if the result is zero, `sin(pi) == 0`, otherwise it will say $\texttt{FALSE}$!
+
+In $\texttt{R}$, the "remainder operator" is $\texttt{%%}$. To get the remainder when you divide 9 by 5 you can write the code $9 \texttt{%%} 5$. Now change the code to get the remainder when you divide 19 by 6.
+
+```{r reminder, exercise=TRUE}
+9 %% 5
+```
+
+```{r reminder-solution}
+19 %% 6
+```
+
+Whatever you write after $\texttt{#}$ will be considered as comments in $\texttt{R}$.
+
+
+```{r hash, exercise=TRUE}
+5 * 3 # This is how we multiply in R
+
+# This is how we divide in R
+10 / 5
+```
+
+To get the absolute value of any number, use the $\texttt{R}$ function $\texttt{abs()}$. Change the following code to compute the absolute value of -10.
+
+```{r abs, exercise=TRUE}
+abs(-1)
+```
+
+```{r abs-solution}
+abs(-10)
+```
+
+To get the natural log use `log()`, and to get the log base 10 use `log10()`. Change the following code to get the value of logarithm of 100 when the base is 10. Also try to find the value of `log(0)`. 
+
+
+```{r log, exercise=TRUE}
+log(100)
+```
+
+
+```{r log-solution}
+log10(100)
+log(0)
+```
+
+You can get the floor or ceiling of a number using the `floor()` and `ceiling()` functions, respectively.
+
+```{r floor, exercise=TRUE}
+floor(1.5)
+ceiling(1.5)
+```
+
+You can use the `round()` function to get the nearest even integer. The `round()` in $\texttt{R}$ does necessarily do what you were taught about how to round numbers! It rounds to nearest even number. Why? If you "always" round numbers ending in .5 up then you are causing an upward bias. The rounding to even numbers will tend to average out at zero bias, as 50% go up and 50% go down. Kinda cool! But it also gives occasional unexpected results.
+
+```{r round, exercise=TRUE}
+round(1.5) # what you expect
+round(0.5) # not what you expect?
+
+round(-0.5) # what you expect 
+round(-1.5) # not what you expect?
+```
+
+## Storing Things in R
+
+In $\texttt{R}$, you can assign a number to an object and then use it for calculation. You can do this in two different ways: using "<-" (called the assignment operator) or the "=" sign you may have intuitively expected. Now change the code to assign 5 to `x` and 10 to `y`, and then calculate the value of $x+y$.
+
+```{r object, exercise=TRUE}
+x <- 5
+```
+
+```{r object-solution}
+x <- 5
+y <- 10
+x + y
+```
+
+In $\texttt{R}$, you can assign the same number to multiple objects at the same time as shown in the code below. Now use the other operator ("=") to accomplish the same thing.
+
+```{r multiassign, exercise=TRUE}
+x <- y <- z <- 5
+x
+y
+z
+```
+
+```{r multiassign-solution}
+x = y = z = 5
+```
+
+Although, "<-" and "=" are essentially equivalent. You must be careful with the assignment operator to not put an extra space between "<" and "-". The following checks whether the value stored in `x` is less than -5, which it is not so it says `FALSE`.
+
+```{r spaces, exercise=TRUE}
+x <- 5 # assigns 5 the label x
+
+x < -5 # is x less than 5?
+```
+```{r spaces-solution}
+x <- 5 # assigns 5 the label x
+
+x < -5 # is x less than 5?
+```
+
+If you wanted to store the value of -5 in `x` then the notation "<-" can look a little weird so do add spaces on either side of the assignment to make it easier to read.
+
+```{r minus, exercise=TRUE}
+x<--5 # harder to read
+x <- -5 # easier to read and understand!
+x <- (-5) # safest way to do it, so you don't make a mistake!
+```
+
+```{r minus-solution}
+x<--5 # harder to read
+x <- -5 # easier to read and understand!
+x <- (-5) # safest way to do it, so you don't make a mistake!
+```
+
+## Vectors to Store Data
+
+In $\texttt{R}$, you can store multiple numbers into a same object. It is called a vector. In the following code `x` is a vector since it contains multiple numbers at the same time. You can use the function `c()` to create a vector, it *c*oncatenate items together. Now change the code to create a new vector `y` which contains the number 5, 15, 25, and 35.
+
+```{r vector, exercise=TRUE}
+x = c(10, 20, 30)
+
+x
+
+```
+
+```{r vector-solution}
+y = c(5, 15, 25, 35)
+```
+
+Now notice what happens when you perform the following operations
+
+```{r vectoroperation, exercise=TRUE}
+y = c(5, 15, 25, 35)
+y + 2
+y - 5
+y * 2
+y / 5
+y + y
+y * y
+```
+
+Now, change the following code to create a vector `x` with 4 different angles in radian, i.e. $0, 0.5\pi, 0.75\pi, \pi$, then calculate the sine of these values.
+
+```{r vectorsin, exercise=TRUE}
+x = pi
+```
+
+```{r vectorsin-solution}
+x = c(0, 0.5 * pi, 0.75 * pi, pi)
+sin(x)
+round(sin(x), 5)
+```
+
+To know how many values are available inside a vector object you can use the `length()` function. The number of available numbers of a vector is denoted as the length of the vector.
+
+```{r length, exercise=TRUE}
+x = c(1, 2, 3, 20)
+length(x)
+```
+
+$\texttt{R}$ has logical operators. When you perform a logical operation, it gives you a result which is either `TRUE` or `FALSE`. The logical operator you need to be familiar with are `<, <=, >, >=, ==, !=`, which you can read as less than, less than equal, greater than, greater than equal, equal, not equal, respectively. Note what results you get when you perform the following operation.
+
+```{r logical, exercise=TRUE}
+2 < 5
+2 < 2
+2 <= 2
+2 == 2
+2 != 2
+2 != 5
+```
+
+The following code performs logical operations on a vector `x` to give `TRUE` if the number is negative inside the vector `x`. Now change the code to get a logical vector which will give `TRUE` for the positive numbers.
+
+
+```{r logicalvector, exercise=TRUE}
+x = c(-3, -2, -1, 0, 1, 2, 3)
+x < 0
+```
+
+
+```{r logicalvector-solution}
+x = c(-3, -2, -1, 0, 1, 2, 3)
+x > 0
+```
+
+## Selecting Data from Objects
+
+There are many ways we can extract numbers from a vector in $\texttt{R}$. The easiest way is to extract them by their index numbers (where they are in the sequence). Notice the square brackets "[]" to extract values (*not round brackets*).
+
+```{r subsets, exercise=TRUE}
+x = c(4, -1, 5, 3)
+x[3] # 3rd value
+x[c(1, 3)] # 1st and 3rd values
+```
+
+```{r subsets-solution}
+x = c(4, -1, 5, 3)
+x[3] # 3rd value
+x[c(1, 3)] # 1st and 3rd values
+```
+
+Another way is to use a logical vector. The logical vector should contain `TRUE` for the value we want to extract and `FALSE` for the value we do not want to extract. In the following code we want to extract first two numbers from the vector `x`. Change the code to get the last two numbers.
+
+```{r subsetting, exercise=TRUE}
+x = c(4, -1, 5, 3)
+index_logical = c(TRUE, TRUE, FALSE, FALSE)
+x[index_logical]
+```
+
+
+```{r subsetting-solution}
+x = c(4, -1, 5, 3)
+index_logical <- c(FALSE, FALSE, TRUE, TRUE)
+x[index_logical]
+```
+
+When you do this what $\texttt{R}$ does in the background is to use the `which()` function to find out the index values
+```{r which, exercise=TRUE}
+x = c(4, -1, 5, 3)
+index_logical = c(TRUE, TRUE, FALSE, FALSE)
+
+which(index_logical)
+
+x[which(index_logical)] # Same result as above. Isn't R helpful, it does this for you...
+```
+
+```{r which-solution}
+x = c(4, -1, 5, 3)
+index_logical = c(TRUE, TRUE, FALSE, FALSE)
+
+which(index_logical)
+
+x[which(index_logical)] # Same result as above. Isn't R helpful, it does this for you...
+```
+
+In the following code, we extracted only positive numbers from a vector. Now change the code to extract the negative numbers from the vector.
+
+```{r subpositive, exercise=TRUE}
+x = c(-3, -2, -1, 0, 1, 2, 3)
+index_positive = (x > 0)
+x[index_positive]
+```
+
+```{r subpositive-solution}
+x <- c(-3, -2, -1, 0, 1, 2, 3)
+index_negative = (x < 0)
+x[index_negative]
+```
+
+
+In $\texttt{R}$, we can combine two logical vector to create one. Notice how we can combine multiple logical vector to create one and then use that logical vector to extract desired numbers from a vector.
+
+
+```{r combining, exercise=TRUE}
+x <- c(-3, -2, -1, 0, 1, 2, 3)
+
+# to extract numbers greater than 1
+x[x > 1]
+# to extract numbers less than -1 
+x[x < (-1)]
+# now to extract numbers less than -1 OR greater than 1
+x[x > 1 | x < (-1)]
+
+# to extract numbers greater than 0
+x[x > 0]
+# to extract numbers less than 2
+x[x < 2]
+# now to extract numbers greater than 0 AND less then 2
+x[(x > 0) & (x < 2)]
+```
+
+Sometimes, you may encounter some special symbols in $\texttt{R}$, e.g. $\texttt{Inf, NA, NaN}$. These means infinity, missing value (*N*ot *A*vailable), and *N*ot *A* *N*umber, respectively. Notice what you get when you run the following code.
+
+```{r special, exercise=TRUE}
+
+log(0)
+sin(NA)
+Inf / Inf
+0 / 0
+```
+
+When you have a vector then you might need to calculate the sum, average, minimum, maximum, range of the given numbers using the $\texttt{R}$ functions `sum()', `mean()`, `min()`, `max()` and `range()`, respectively.
+
+```{r summary, exercise=TRUE}
+x <- c(10, 20, 30, 40)
+sum(x)
+mean(x)
+min(x)
+max(x)
+range(x)
+```
+
+## What Have I Created? How to Delete Things?
+
+When you create many objects in $\texttt{R}$, you might want to see all the objects you have created. You can do that using either $\texttt{objects()}$  or $\texttt{ls()}$ function. You can also remove an object using the $\texttt{rm()}$ function.
+
+
+```{r objects, exercise=TRUE}
+# Create three objects
+x = 2
+y = c(3, 5)
+z = "I am a character vector"
+
+# Let's examine what objects we have
+objects()
+ls()
+
+# Remove just object "x"
+rm("x")
+
+# What objects are left?
+objects()
+
+# Remove everything to have a cleanup!
+
+rm(list = objects())
+
+objects() # nothing left
+```
+
+## Something Fun
+
+Now, lets do something fun!
+
+We are already familiar with a vector. We are going to examine a dataset which is available in $\texttt{R}$. The name of the dataset is $\texttt{mtcars}$ and it was extracted from the 1974 *Motor Trend* US magazine, and comprises fuel consumption and 10 aspects of automobile design and performance for 32 automobiles. Now we are going to see the information related to the first six cars in the dataset. The table of data is stored as a `data.frame` object in $\texttt{R}$, with rows and columns.
+
+```{r head, exercise=TRUE}
+head(mtcars)
+```
+
+We can see each column has a name and each row has name too! The row names are the name of the car and the column names are the different aspect of the cars. The first name of the column is $\texttt{mpg}$, which is short for "miles per gallon". The details of the variables are below.
+
+     mpg   Miles/(US) gallon                        
+     cyl   Number of cylinders                      
+     disp  Displacement (cu.in.)                    
+     hp    Gross horsepower                         
+     drat  Rear axle ratio                          
+     wt    Weight (1000 lbs)                        
+     qsec  1/4 mile time                            
+     vs    Engine (0 = V-shaped, 1 = straight)      
+     am    Transmission (0 = automatic, 1 = manual) 
+     gear  Number of forward gears                  
+     carb  Number of carburetors    
+
+
+Now, we can extract the `mpg` variable from the dataset `mtcars` using $\texttt{\$}$ operator. Change the following code to extract the `cyl` (number of cylinders) variable from the dataset.
+
+```{r varextract, exercise=TRUE}
+mtcars$mpg
+```
+
+```{r varextract-solution}
+mtcars$cyl
+```
+
+To find out the average "miles per gallon" for the given cars, we can use the $\texttt{mean()}$ function. To find out frequency (count) of a categorical or discrete variable (such as $\texttt{cyl}$) we can use the $\texttt{table()}$ function. Now, change following code to find out how many cars were there with 8 cylinders. Note, $\texttt{cyl}$ variable contains the number of cylinders of each car.
+
+```{r summary2, exercise=TRUE}
+mean(mtcars$mpg)
+```
+
+```{r summary2-solution}
+table(mtcars$cyl) # counts
+prop.table(table(mtcars$cyl)) # proportions
+```
+
+There are many ways to do the same thing in $\texttt{R}$. The frequency table that we generated in the previous code chunk can also be generated using the $\texttt{tidyverse}$ package. In the following code we use the functions available in the $\texttt{tidyverse}$ package to generated frequency table for the $\texttt{cyl}$ variable.
+
+```{r tidyverse, message=FALSE, warning=FALSE, exercise=TRUE}
+library(tidyverse)
+
+mtcars %>% select(cyl) %>% table()
+```
+Now, there is a lot going on here. First, we loaded a package called $\texttt{tidyverse}$ using the $\texttt{library()}$ function. A package is a collection of new functions and datasets that can be used when loaded. However, you have to install the package if it is not already available. You can install a package using the $\texttt{install.packages()}$ function. For example, $\texttt{tidyverse}$ package can be installed using the code $\texttt{install.packages("tidyverse")}$. Note the quotation marks around the name of the package. After installing the package you need to use the code $\texttt{library(tidyverse)}$ to load the package every time you need to use it.
+
+The next new thing is the $\texttt{%>%}$, which is called "pipe" operator. Using this operator, you can re-express the code $\texttt{head(mtcars)}$ with $\texttt{mtcars %>% head()}$. Technically, you are piping or sending the data on the left hand side of $\texttt{%>%}$ to the first argument of the function on the right hand side. But you can read $\texttt{%>%}$ as "send to".
+
+The $\texttt{select()}$ function selects the column needed. Finally, the $\texttt{table()}$ function produces the frequency table of the selected column.
+
+$\texttt{prop.table()}$ function takes the result of the $\texttt{table()}$ function as input to produce corresponding proportion. Change the following code to generated the proportion of cars with different number of cylinders.
+
+```{r tidyverse-2, exercise=TRUE, message=FALSE, warning=FALSE}
+library(tidyverse)
+
+mtcars %>% select(cyl) %>% table()
+```
+
+
+```{r tidyverse-2-solution}
+library(tidyverse)
+
+mtcars %>% select(cyl) %>% table() %>% prop.table()
+```
+
+`table()` and `prop.table()` functions are useful to summarise categorical and discrete variables. To summarise a numerical variable we use `mean()`, `sd()`, etc. functions in $\texttt{R}$. The $\texttt{tidyverse}$ package gives a nice way to calculate those summaries using the `summarise()` function. Note how we calculated the mean (using `mean()` function) and the standard deviation (using `sd()` function) of the `mpg` variable. Now change the code to do the same for the `hp` variable.
+
+```{r num-summ, exercise=TRUE, message=FALSE, warning=FALSE}
+library(tidyverse)
+
+mtcars %>% summarise(mean(mpg))
+
+mtcars %>% summarise(mean(mpg), sd(mpg))
+
+```
+
+```{r num-summ-solution}
+library(tidyverse)
+mtcars %>% summarise(mean(hp), sd(hp))
+```
+
+There are many ways you can produce plots/graphs in $\texttt{R}$. One of the way is to use \code{ggplot}. The $\texttt{ggplot2}$ package is used to produce such plots and it is a part of the $\texttt{tidyverse}$ package. Following code produces barplot for the $\texttt{cyl}$ variable. Now change the code to produces barplot for the $\texttt{am}$ variable. Put the appropriate label for the x-axis. Hint: you have to replace $\texttt{cyl}$ with $\texttt{am}$ in the following code.
+
+```{r ggplot, message=FALSE, warning=FALSE, exercise=TRUE}
+library(tidyverse)
+
+mtcars %>% ggplot(aes(cyl)) + geom_bar()
+```
+
+```{r ggplot-solution}
+library(tidyverse)
+mtcars %>% ggplot(aes(am)) + geom_bar()
+```
+
+Let's add a little colour, better axis labels and a title to make it more suitable.
+
+```{r ggplottidy, message=FALSE, warning=FALSE, exercise=TRUE}
+library(tidyverse)
+
+mtcars %>% ggplot(aes(cyl, fill = factor(cyl))) + geom_bar() +
+    labs(x = "Number of cylinders", y = "Count", title = "Count Cars with No. of Cylinders")
+
+```
+
+```{r ggplottidy-solution}
+library(tidyverse)
+
+mtcars %>% ggplot(aes(cyl, fill = factor(cyl))) + geom_bar() +
+    labs(x = "Number of cylinders", y = "Count", title = "Count Cars with No. of Cylinders")
+```
+

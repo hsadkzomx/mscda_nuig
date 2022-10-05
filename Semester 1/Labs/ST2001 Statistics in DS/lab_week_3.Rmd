@@ -1,0 +1,374 @@
+---
+title: "Building more R knowledge"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+```
+
+## Describing Data Using in R
+
+Most of our computation in $\texttt{R}$ will be using data in table form, with rows and columns,  which are often stored as a `data.frame` object. The rows usually represent different *observations*, from humans, cars, etc., and the columns represent different *variables* (features of the observation), e.g. height and weight for humans or engine size for cars. 
+
+The `titanic_train` dataset (`data.frame`) comes from the `titanic` library. The dataset contains information related to some of the passengers who were on board when the tragic event happened in 1912. The `glimpse()` function gives us an overview of the dataset on each passenger. We can see that the dataset contains 12 features (variables) from the 891 passengers (observations). 
+
+```{r titanic, exercise=TRUE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% glimpse()
+```
+
+The details of the variable name in the `titanic_train` dataset are below:
+
+    PassengerId  Passenger ID
+    Survived     Passenger Survival Indicator
+    Pclass       Passenger Class
+    Name         Name of the passenger
+    Sex          Sex of the passenger
+    Age          Age of the passenger
+    SibSp        Number of Siblings/Spouses Aboard
+    Parch        Number of Parents/Children Aboard
+    Ticket       Ticket Number
+    Fare         Passenger Fare
+    Cabin        Cabin
+    Embarked     Port of Embarkation
+
+
+You can also get the *dimension* (number of rows and columns) of the dataset using the `dim()` function instead of `glimpse()`. To extract number of rows and columns separetly use the `nrow()` and `ncol()` functions, respectively.
+
+Add the necessary code below to extract the number of rows and columns separately and together for the `mtcars` dataset. Note when you use `dim()` function what is the first value represent. Is it the number of columns or rows? 
+
+```{r dim, exercise=TRUE, message=FALSE, warning=FALSE}
+library(tidyverse)
+
+mtcars %>% glimpse()
+mtcars %>% dim()
+
+```
+
+```{r dim-solution, message=FALSE, warning=FALSE}
+library(tidyverse)
+
+mtcars %>% nrow()
+mtcars %>% ncol()
+mtcars %>% dim()
+```
+
+Last week, we used `[]` brackets to extract elements from vectors. Now, we will use the same brackets to extract certain rows and columns from the `data.frame` table object. The following code extract the first five observations and the first three variables from the `mtcars` dataset. Now change the code to extract the last five observations and last three variables from the table.
+
+
+```{r subset, exercise=TRUE}
+mtcars[c(1,2,3,4,5), c(1,2,3)]
+
+mtcars[1:5, 1:3] # using sequences of numbers is easier
+
+mtcars[(nrow(mtcars)-4):nrow(mtcars), (ncol(mtcars)-2):ncol(mtcars)]
+
+```
+
+
+```{r subset-solution}
+mtcars[c(28, 29, 30, 31, 32), c(9, 10, 11)]
+
+mtcars[28:32, 9:11]
+```
+
+What we did in the above code chunk is to use the `index` to extract the desired rows and columns. Each rows and columns could have a name too! The variables on the columns are almost always labelled and we can use the `names()` function to see them. Row names are less commonly used, but they are available then you can use the `rownames()` function to see them.
+
+Change the following code to get the row names from the `mtcars` dataset.
+
+```{r names, exercise=TRUE}
+names(mtcars)
+```
+
+
+```{r names-solution}
+rownames(mtcars)
+```
+
+The following code extract the first four observations and first three columns from the `mtcars` dataset using their row and column names. Notice that we have split the line of code onto two lines to make it easier to read. The rows to extract are specified on the first line before the comma, with the columns specified on the second line after the comma.
+
+Change the code to extract the last five observations and last three variables by their names.
+
+```{r sub-name, exercise=TRUE}
+mtcars[c("Mazda RX4", "Mazda RX4 Wag", "Datsun 710", "Hornet 4 Drive", "Hornet Sportabout"),
+       c("mpg", "cyl", "disp")]
+```
+
+```{r sub-name-solution}
+mtcars[c("Lotus Europa", "Ford Pantera L", "Ferrari Dino", "Maserati Bora", "Volvo 142E"),
+       c("am", "gear", "carb")]
+```
+
+## Types of Variables
+
+The data variables can contain different types of information. For the purpose of measurement, we can categorise them as *qualitative* and *quantitative* variables, often described as *categorical* and *numerical* repsectively. So qualitative/categorical variable represents either *nominal* or *ordinal* scale and quantitative/numerical variable represents *interval* or *ratio* scale of measurement. These are referred to as the *data types*.
+
+When we store information in computer memory, we use different *storage types* depending on more detailed properties of the data. In $\texttt{R}$, we usually store in *character*, *integer*, and *double* data types. Any information can be stored in the character data type, but it is quite inefficient. The `double` data type can be used to store numerical (either discrete or continuous) variables. The `integer` data type can be used to store categorical or discrete information, e.g. count data or by coding binary genders of female and male as the numerical values of 0 and 1 respectively. 
+
+The `glimpse()` function tells us the type of variable being stored (character, integer, logical or double). Run the following code and try to understand the storage type and data type of each of the variables.
+
+```{r data-type, exercise=TRUE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% glimpse()
+```
+
+The passenger `Name` is a character string and `PassengerId` is an integer. The numerical `Fare` and `Age` variables are stored as `double`. The `Survived` variable is of storage type `<int>`, short for integer, which is an indicator of survival with `0` indicating the passenger did not survived and `1` that they did survive.
+
+The storage type of the `Sex` variable is stored as a character string. Logical data (TRUE/FALSE) are stored binary values 0/1 as a `logical` object. In the following code we create a new variable called `AreMale` which is a logical object.
+
+```{r logical-type, exercise=TRUE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train$AreMale = (titanic_train$Sex == "male")
+titanic_train %>% glimpse()
+```
+
+
+The important things to notice here is that each column of a dataset has a storage type and also a data type. $\texttt{R}$ functions works based on the storage type of the variable but when we use different numerical and graphical summaries, we choose based on their data types. For these reason, we might need to change the storage type of a variable to ensure the desired result from a $\texttt{R}$ function. But that's a topic for future labs.
+
+## Numerical Summaries of Data
+
+The `summary()` function can be used to produce numerical summary of a variable. The following code produces numerical summary of the `Pclass` variable in the `titanic_train` dataset. Do you think that is the appropriate summary of the `Pclass` variable? 
+
+```{r summary-fun, exercise=TRUE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% select(Pclass) %>% summary()
+```
+
+This is not the best summary for the `Pclass` variable, as it is an ordinal variable with few levels. e.g. the median is not very useful in this context. A more useful summary would be to count the number of passengers belonging to each class.
+
+But why $\texttt{R}$ is giving this summary? The answer is that $\texttt{R}$ `summary()` chooses the summary information based on the storage type of the variable. The `Pclass` variable is stored as an integer and `summary()` calculates minimum, median, mean, etc. for the integer variables.
+
+Now, change the following code to count of number of passengers in each class, from the`Pclass` variable. Hint: you need to change the `summary()` function to the `table()` function that you are already familiar from the previous lab.
+
+```{r summary-table, exercise=TRUE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% select(Pclass) %>% summary()
+```
+
+
+```{r summary-table-solution, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% select(Pclass) %>% table()
+hist(as.numeric(unlist(titanic_train$Age)))
+boxplot(as.numeric(unlist(titanic_train$Age)))
+
+```
+
+Now, for the `Sex` variable the`summary()` function is even more uninformative. Change the code to compute the percentage (not proportion) of "female" and "male" passengers. 
+
+```{r summary-percent, message=FALSE, warning=FALSE, exercise=TRUE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% select(Sex) %>% summary()
+```
+
+
+```{r summary-percent-solution, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% select(Sex) %>%
+  table() %>%
+  prop.table() %>% # proportions from prop.table()
+  round(2) * 100 # percentage better, rounded to nearest integer here
+```
+
+An alternative way of handling this problem is to change the storage type to a `factor` storage type. Let's take a look at a factor. It has the same data as before, but has some additional information that there are only two levels of "female" and "male" allowed.
+
+```{r factor, exercise=TRUE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train$Sex = factor(titanic_train$Sex)
+titanic_train$Sex
+```
+
+Now let's redo the `summary()`, which is much more useful.
+
+```{r factor-summary, exercise=TRUE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train$Sex = factor(titanic_train$Sex)
+titanic_train %>% select(Sex) %>% summary()
+```
+
+Let's get the basic summary statistics (minimum, maximum, mean, median and quartiles) for the ticket `Fare` of the ticket for the passenger. The `summary()` function works well, but it does not give the standard deviation. Change the code to get only four summaries (minimum, maximum, average, and standard deviation).  
+
+```{r summary-age, message=FALSE, warning=FALSE, exercise=TRUE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% select(Fare) %>% summary()
+```
+
+```{r summary-age-solution, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% select(Fare) %>%
+  summarise(min(Fare), max(Fare), mean(Fare), sd(Fare))
+```
+
+## Graphical Summaries of Data
+
+Graphical summary or plots are very useful for conveying information to a broader audience. A nice plot with appropriate labels and good choice of colours can attract attention.
+
+The choice of graphical summary depends on what type of variable we are dealing with and what information we are trying to portray. For this lab, we are going to create some basic but very useful graphical summaries for different types of variable.
+
+`Sex` is a categorical variable in the `titanic_train` dataset. A useful graphical summary for a categorical variable is a *barplot*. In the last lab, we created barplot where the y-axis represented the number of count for each category. Sometimes, putting percentage or proportion on the y-axis in a barplot is more useful.
+
+The following code produces a barplot of the `Sex` variable. We are using the `ggplot2` package to create the barplot. The name of the package is the short form of "grammar of graphics plot". The name of the package is so because it is the $\texttt{R}$ implementation of the style of plots suggested in the "The Grammar of Graphics" book by Leland Wilkinson. 
+
+Whenever you want to create a plot using the `ggplot2` library, you have to use the `ggplot()` function first then you can add/change different components to the plots using other functions. You notice, here we put the `aes()` function inside the `ggplot()` function.  `aes()` is short for "aesthetic". Inside this function we specify which variables to put on x-axis and y-axis, as well as what colours are used, and so on. 
+
+We put `x=Sex` inside the `aes()` function, because we want to put the `Sex` variable on the x-axis. Until now there is no plot to produce, because we haven't told which (*geometry*) components to display for the x-variable. The `geom_bar()` function does that. "geom" is short for "geometric" and "bar" is the geometric shape/form we want to draw.
+
+Notice that we use the `+` operator to add each new component to the plot, not the pipe operator `%>%` used for the tidyverse functions.
+
+Now change the code to see what happen when you put `y=Sex` inside the `aes()` function.
+
+```{r ggplot-1, message=FALSE, warning=FALSE, exercise=TRUE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% ggplot(aes(x = Sex)) + geom_bar()
+```
+
+```{r ggplot-1-solution, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% ggplot(aes(y = Sex)) + geom_bar()
+```
+
+In the last plot, we did not specify what to do with the y-axis. By default it produced the count of each category and put that on the y-axis. Thankfully in the background `ggplot` creates some temporary variables that store the count of each factor level. We can access that information using the temporary variable `..count..`, and we can generate the corresponding proportion using `(..count..) / sum(..count..)`. Notice that we use that temporary variable with proportion on the y-axis to plot the proportion of each categories. 
+
+Now change the code to plot percentage instead of proportion.
+
+```{r ggplot-2, message=FALSE, warning=FALSE, exercise=TRUE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% ggplot(aes(x = Sex, y = (..count..) / sum(..count..))) +
+  geom_bar()
+```
+
+```{r ggplot-2-solution, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% ggplot(aes(x = Sex, y = 100 * (..count..) / sum(..count..))) +
+  geom_bar()
+```
+
+Now we have the proportion on the y-axis but it gives us an ugly axis label. We could use `labs()` function to change the label of the y-axis. Now change the code to replace the x-axis label "Sex" with a new label "Passenger Gender".
+
+
+```{r ggplot-3, message=FALSE, warning=FALSE, exercise=TRUE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% ggplot(aes(x = Sex, y = 100 * (..count..) / sum(..count..))) +
+  geom_bar() + labs(y = "Percentage")
+```
+
+
+```{r ggplot-3-solution, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% ggplot(aes(x = Sex, y = 100 * (..count..) / sum(..count..))) +
+  geom_bar() + labs(y = "Percentage", x = "Passenger Gender")
+```
+
+Now we can use the `fill` *aesthetic* to change the colour to fill the bar. In the following code we use `fill = factor(Sex)` to fill the bars with different colours corresponding to different factor levels.
+
+```{r ggplot-4, message=FALSE, warning=FALSE, exercise=TRUE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% ggplot(aes(x = Sex, y = (..count..) / sum(..count..), fill = factor(Sex))) +
+  geom_bar() + labs(y = "Proportion", x = "Passenger Gender")
+```
+
+Notice that there is a grey grid in the background of the plot by default. We can override the default behaviour. You can change any feature you want using the `theme()` function. But now we are not going to go into describing all the options. Instead you can use the `theme_minimal()` function to have a very simplistic graph, with white background.
+
+Change the code below to produce a barplot for the `Plcass` variable with appropriate axis labels and simplistic graph.
+
+
+```{r ggplot-5, message=FALSE, warning=FALSE, exercise=TRUE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% ggplot(aes(x = Sex, y = (..count..) / sum(..count..), fill = factor(Sex))) +
+  geom_bar() + labs(y = "Proportion", x = "Passenger Sex") +
+  theme_minimal()
+```
+
+
+```{r ggplot-5-solution, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% ggplot(aes(x = Pclass, y = (..count..) / sum(..count..), fill = factor(Pclass))) +
+  geom_bar() + labs(y = "Proportion", x = "Passenger Class") +
+  theme_minimal()
+```
+
+A histogram or boxplot is more appropriate for continuous variables like the passenger `Age`. In the `ggplot2` package, the general structure is the same for all types of plot. The `geom_*` functions make the plots different. It is possible to create a histogram by simply changing the  `geom_*` function. We can create a histogram using `geom_histogram()`, and the `geom_*` function associated with creating boxplot is `geom_boxplot()`. Change the following code to produce a boxplot for the `Age` variable.
+
+```{r histogram-box, message=FALSE, warning=FALSE, exercise=TRUE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% ggplot(aes(x = Age)) + geom_histogram() +
+  labs(x="Passenger Age", y = "") + theme_minimal()
+
+```
+
+
+
+```{r histogram-box-solution, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% ggplot(aes(x = Age)) + geom_boxplot() +
+  labs(x = "Passenger Age", y = "") + theme_minimal()
+
+```
+
+
+We have created a nice boxplot. Now how would you interpret this for a lay audience?
+
+One final comment, we mentioned in the lectures that there are many ways to calculate the upper and lower quartiles. These different methods affect the drawing of boxplot which use these quartiles and interquartile range (IQR). For medium to large datasets these differences are usually minor and so can be ignored. Below is the code to use Tukey's method using the `fivenum()` function and an alternative function `boxplot()` to produce the boxplot using Tukey's method.
+
+Notice that there is very little difference in the boxplots (there is one less outlier below, as the other outlier is within $Q_3+1.5\times IQR$ upper fence for `ggplot` boxplot).
+
+
+```{r boxplot, exercise=TRUE, message=FALSE, warning=FALSE}
+library(titanic)
+
+summary(titanic_train$Age) # uses a fancier method for quartiles, too complicated to explain for ST2001!
+
+fivenum(titanic_train$Age) # Notice the small difference in lower quartile, upper quartile is same
+
+boxplot(titanic_train$Age, horizontal = TRUE) # look at upper whisker and outliers
+
+```
+

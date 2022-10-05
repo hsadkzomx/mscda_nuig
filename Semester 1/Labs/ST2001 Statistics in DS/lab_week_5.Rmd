@@ -1,0 +1,435 @@
+---
+title: "Reading Datafiles into R"
+output:
+  output: learnr::tutorial
+  #html_document: default
+  #word_document: default
+  #pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE,	warning = FALSE)
+```
+
+So far we have learned how to summarise (both numerically and graphically)  different types of variables. We also learned how to produce numerical and graphical summaries of a variable across different groups of another categorical variable. But all the variables we used so far are from datasets that are already available in $\texttt{R}$. 
+
+
+A key next skill to learn is to import datasets into $\texttt{R}$. There are a lot of common mistakes when downloading files using browsers and then reading them into R. So we have produced a set of slides explaining these and how to avoid or overcome them, entitled "Working with R or R-Markdown and Datafiles". You may wish to read these slides first. They are posted with this lab material and in the Discussion Board.
+
+
+## Reading datasets into `R`
+
+The datasets we want to import into $\texttt{R}$ might be in different file format, e.g. ".csv", ".xlsx", ".sav", ".dat", ".xml", etc. Among all these file format ".csv" is the simplest and most portable (from one machine to the other) file format. When working with different people you cannot assume they a particular piece of software (e.g. Excel), and you need to be aware that many datafile formats do not have well defined standards so can be unreliable when sharing across different systems.
+
+It is possible to import dataset in any of the file formats listed above and many others besides. But for the purpose of demonstration, we will show you how to import a dataset in ".csv" format using the function `read.csv()`. 
+
+**Firstly, you need to ensure the ".csv" file and this markdown file are stored in the same folder. Next ensure `R` is using that folder as the working directory (go to Session >  Set Working Directory > To Source File Location if you need to set it).**
+
+# Gapminder Dataset
+
+We are going to use the gapminder dataset which is available in the "gapminder.csv" file. The dataset contains life expectancy at birth (under `lifeExp` variable name), total population (`pop`), and GDP per capita (`gdpPercap`) of 142 different countries from five different continents over 1952 to 2007. You can find more information and more variables from [here](https://www.gapminder.org/data/). Hans Rosling, the co-founder and chairman of the Gapminder Foundation, gave a mesmerizing Ted talk on this data which you can watch [here](https://www.ted.com/talks/hans_rosling_the_best_stats_you_ve_ever_seen?language=en).    
+
+The following code chunk reads the "gapminder.csv" into an $\texttt{R}$ object `gapminder`. If you get an error message, please read the slides on "Working with R or R-Markdown and Datafiles" and if you cannot resolve the problem discuss it with the tutor.
+
+```{r }
+library(tidyverse)
+
+gapminder = read.csv("gapminder.csv")
+```
+
+The first thing to do when reading a dataset into statistical software is to check it has been read in correctly. You can get an overview of the dataset using the `glimpse()` function.
+
+```{r }
+gapminder %>% glimpse()
+```
+
+To understand the dataset contents, please complete the following task
+
+**Task 1:** 
+
+* What is the experimental unit here?
+* What is the dimension of the dataset (number of rows and columns)?
+
+```{r}
+
+print("The experimental unit is the countries around the globe")
+print(paste0("The dimension of dataset is ", nrow(gapminder), " rows and ", ncol(gapminder), " columns"))
+
+```
+
+
+## Filtering rows with the `filter()` function
+
+You can see that there are 1,704 (=142*12) rows in the dataset along with 6 columns. The unit of observation here is country, since all the information available here belong to countries. In the `mtcars` dataset the experiments units were a particular model of car and for the `titanic_train` dataset it was a passenger. However, the `gapminder` dataset is somewhat more complex in the sense that for the `mtcars` dataset each car occupied only one row and for the `titanic_train` dataset each passenger occupied only one row of the dataset but for the `gapminder` dataset each country occupies 12 rows of the dataset. For a particular country, these 12 rows contain information related to different year of data collection.
+
+Now, if we want to calculate the average population of European countries in 2007, we simply cannot use `summaries(mean(pop))` because it will give the average population of all the countries across all the years. So we have to keep the rows corresponding to European countries for 2007 by filtering out the rows we do not want. The `filter()` function from the `tidyverse` package can help us to keep the rows corresponding to European countries for 2007.
+
+Run the code below. `"Europe"` is a value for the `continent` variable and `2007` is a value for the `year` variable. To keep the rows corresponding to the `"Europe"` value of the `continent` variable we can use `filter(continent == "Europe")`. To keep the rows corresponding to the `2007` value of the `year` variable we can use `filter(year == 2007)`. But to keep the rows belonging to both of them we need to use `filter(continent == "Europe" & year == 2007)`. Here we used a logical operator `&`. If you are not sure how it works please revisit the first lab.
+
+```{r , max.print=5}
+library(tidyverse)
+
+gapminder %>% filter(continent == "Europe" & year == 2007)
+```
+
+Instead of using the logical operator `&` we can  separate each condition in the `filter()` function with a comma. Take a look at the help for the `filter()` function typing `help(filter)` in the `R` Console, scroll down to "Arguments" and the entry for `...` which explains that it just combines them with an `&` operator.
+
+```{r , max.print=5}
+gapminder %>% filter(continent == "Europe", year == 2007)
+```
+
+**Task 2:** In the following code chunk, use the `filter()` function to keep the rows corresponding to the countries in the Americas only for the year 1952.
+
+```{r}
+
+gapminder %>% filter(continent == "Americas", year == 1952)
+
+```
+
+## Selecting Columns With the `select()` Function
+
+To keep the desired rows of a dataset we can use `filter()` function. Similarly, to keep the desired columns (variables) we can use the `select()` function. Here we select the country and population columns.
+
+
+```{r}
+gapminder %>% 
+  filter(continent == "Europe" & year == 2007) %>%
+  select(country, pop)
+```
+
+**Task 3:** In the following code chunk, use the `select()` function to retain the `country`, `continent`, `year`, and `lifeExp` of the `gapminder` dataset.
+
+
+```{r}
+gapminder %>% 
+  select(country, continent, year, lifeExp)
+```
+
+
+## Create a New Variable With the `mutate()` Function
+
+The `filter()` and `select()` functions help us take "actions" on the dataset, so they are described as "verbs for data manipulation". The most commonly used verbs (functions) are: `select()` , `filter()`, `summarise()`, `mutate()`,  and `arrange()`. Let's now demonstrate using the last two verbs.
+
+The `pop` variable gives the population size for each countries. But it is hard to read such big numbers in the table above. So we could create a variable to store that number in millions (as population are usually expressed in millions). The `mutate()` function enables us to change variables in the dataset, including creating new variables.
+
+In the code below we created a new variable `pop_mill` using the `mutate()` function by dividing the existing variable `pop` by a million (1,000,000). To keep only two decimal places we use the `round()` function.
+
+
+```{r}
+gapminder %>%
+  filter(continent == "Europe" & year == 2007) %>%
+  select(country, pop) %>%
+  mutate(pop_mill = round(pop / 1000000, 2))
+```
+
+**Task 4:** Create a new variable to store the total GDP of each country each year in billions (1,000,000,000) rounded to two decimal places. Hint: you need to multiply the GDP per capita by the total population to get total GDP of that year using the `mutate()` function.
+
+```{r}
+gapminder %>%
+  select(country, pop, gdpPercap) %>%
+  mutate(gdp_bill = round(gdpPercap*pop / 1000000000, 2))
+```
+
+## Arrange rows of a dataset using `arrange()` function
+
+We may also want to rank the five European countries by population size in 2007. We can do that using the `arrange()` function. 
+
+The code below arranges the dataset in **ascending** order by the `pop` variable, using the `arrange()` function. Not surprisingly Ireland made the list due its small size within Europe!
+
+```{r}
+gapminder %>%
+  filter(continent == "Europe" & year == 2007) %>%
+  select(country, pop) %>%
+  mutate(pop_mill = round(pop / 1000000, 2)) %>%
+  arrange(pop)
+```
+
+Now, if we want to see the top five most populous countries in Europe in 2007, we can use the `desc()` function inside the `arrange()` function. By default the `arrange()` function arrange the dataset from the smallest to the largest, but with the help of `desc()` function we can arrange the dataset from the largest to the smallest. See the code below, how we can use the `desc()` function inside the `arrange()` function to arrange the dataset from the largest to the smallest.
+
+```{r}
+gapminder %>%
+  filter(continent == "Europe" & year == 2007) %>%
+  select(country, pop) %>%
+  mutate(pop_mill = round(pop / 1000000, 2)) %>%
+  arrange(desc(pop))
+```
+
+**Task 5:** Now write the code below to find out the top five most economically productive countries (measured by GDP per capita) in Africa in 2002.
+
+```{r}
+gapminder %>%
+  filter(continent == "Africa" & year == 2002) %>%
+  select(country, pop, gdpPercap) %>%
+  mutate(gdp_bill = round(gdpPercap*pop / 1000000000, 2)) %>%
+  arrange(desc(gdpPercap))
+```
+
+
+## Filtering Rows Based on Multiple Values of a Variable
+
+One way to filter more than one year at a time, or multiple countries, is to use the `%in%` operator. 
+Suppose we want to extract rows for Ireland and New Zealand, in both 2002 and 2007. In $\texttt{R}$, we can create a vector of these countries using `c("Ireland","New Zealand")` and the two years `c(2002, 2007)`.
+
+The following code extracts the rows for these two countries for those two years. Note: the code deliberately uses single quotes to demonstrate that a **character string** can use double "" or single '' quotation marks.
+
+
+```{r}
+library(tidyverse)
+
+gapminder %>%
+  filter(country %in% c('Ireland', 'New Zealand') & year %in% c(2002, 2007))
+```
+
+**Task 6:**  Now write the code to extract rows corresponding to the Europe and Oceania from 1997 and 2007. 
+
+```{r}
+gapminder %>%
+  filter(continent %in% c('Europe', 'Oceania') & year >= 1997 & year <= 2007)
+```
+
+## Revisiting `group_by()` function
+
+Now, if we want to calculate the average GDP per capita for each of the continent by year, we could do that using the `group_by()` function that you are already familiar with.
+
+The following code groups the dataset by `continent` and `year`, and then calculates the average GDP per capita for each continent per year
+
+```{r message = FALSE, warning = FALSE}
+gapminder %>%
+  group_by(continent, year) %>%
+  summarise(mean(gdpPercap)) 
+```
+
+You can see the resulting dataset has 60 rows because there are 12 year * 5 continent groups. The `summarise(mean(gdpPercap))` calculate the average GDP per capita over all the countries in that continent for that particular year.
+
+If you want to count how many countries belong to a particular group and used this to calculate the average you can generate that number using the counting function `n()` inside the `summarise()` function. In statistics, "n" oft refers to as sample size.
+
+From the code below, you can see for each year 52 countries used to calculate the average in Africa. If you scroll through the table then you can see it varies for each continent.  
+
+
+```{r}
+gapminder %>%
+  group_by(continent, year) %>%
+  summarise(n(), mean(gdpPercap))
+```
+
+**Task 7:** Write code below to find out how many countries were used to calculate the mean for the Oceania continent over different years.
+
+```{r}
+gapminder %>%
+  group_by(continent, year) %>%
+  summarise(n(), mean(gdpPercap)) %>%
+  filter(continent %in% c('Oceania'))
+```
+
+## Creating a Cross-tabulation of Summary Statistics
+
+To see how many countries are there in the dataset for each continent by years. We can generate a cross-table using the `table()` function as follows.
+
+```{r}
+gapminder %>%
+  select(continent, year) %>%
+  table()
+```
+
+Here, each row refers to the name of the continent, each column refers to the corresponding year, and the value in each cell of the table is the count of the entries. We may want to generate such a table but with the average value of the GDP per capita not the number of countries. How can we do that? To this we need to learn another function `pivot_wider()`.
+
+Run the following code.
+```{r}
+gapminder %>%
+  group_by(continent, year) %>%
+  summarise(mean(gdpPercap)) %>%
+  pivot_wider(names_from = year, values_from = `mean(gdpPercap)`)
+```
+
+Now instead of the count, now we have average GDP per capita for each continent by year. It is very easy to compare the average GDP per capitat across year and continent.
+
+It is slightly easier to code if you name the result from the `summary()` function as you can then just refer to it by name in `pivot_wider()`. Notice that the results are the same, but the code is maybe a little easier to understand.
+
+```{r}
+gapminder %>%
+  group_by(continent, year) %>%
+  summarise(meanGDP = mean(gdpPercap)) %>%
+  pivot_wider(names_from = year, values_from = meanGDP)
+```
+
+The `pivot_wider()` function *reshaped* the dataset by taking the column `year` and making each of its category as separate column. Then it fills the cell by taking values from the `meanGDP` variable. The part of the name of the function is "wider" because it makes the dataset "wide" by creating more variables than it has before. This type of transformation of dataset is called "reshaping". If this concept seems a bit advanced, do not worry we will discuss more about reshaping in future labs.
+
+
+**Task 8:** Create a cross-table of continent and year with median life expectancy as the value for each cell.
+
+```{r}
+gapminder %>%
+  group_by(continent, year) %>%
+  summarise(medianLifeExp = median(lifeExp)) %>%
+  pivot_wider(names_from = year, values_from = medianLifeExp)
+```
+
+## Creating a Scatterplot With `geom_point()` 
+
+We have created a nice summary table to compare the average GDP per capita among different continents across different years. A graphical summary may be useful for audiences that don't like tables of numbers. **A picture is worth a thousand words, or numbers!*
+
+Suppose, we want to see the change of life expectancy over the years for Ireland. First, we can filter the dataset to get the rows related to Ireland and then we can put `year` variable on the x-axis and `lifeExp` on the y-axis for the `ggplot`. Then we can represent each value as a point (geometric shape). In the following code we used the `geom_point()` function to create such a plot with "points" as geometric shape. This kind of plot is commonly known as *scatterplot*.
+
+
+```{r}
+gapminder %>%
+  filter(country == "Ireland") %>%
+  ggplot(aes(x = year, y = lifeExp)) +
+  geom_point() +
+  labs(x = "Year", y = "Life Expectancy at Birth")
+```
+
+**Task 9:** Create a scatterplot of Irish population against year to see how Irish population is changing.
+
+```{r}
+gapminder %>%
+  filter(country == "Ireland") %>%
+  ggplot(aes(x = year, y = pop)) +
+  geom_point() +
+  labs(x = "Year", y = "Population")
+```
+
+## Layered Graphics with `ggplot`
+
+If we want to connect each of the dots by a line then we could use the `geom_line()` function in the plot above. In the code below, notice that we just added a new geometric shape in the plot and we have two plots (a scatter plot and a line plot) on the same plot!  So we added a new *layer* by `geom_line()` function on the existing plot.
+
+We can add as many layers we want to the plot to make it more informative. This is a very powerful feature of `ggplot`. It is part of the "grammar of graphics", hence the **gg* in `ggplot`.
+
+
+```{r}
+gapminder %>%
+  filter(country == "Ireland") %>%
+  ggplot(aes(x = year, y = lifeExp)) +
+  geom_point() +
+  geom_line() +
+  labs(x = "Year", y = "Life Expectancy at Birth")
+```
+
+**Task 10:** Create a layered graphics (with both a scatterplot and line plot) of Irish population against year.
+
+```{r}
+gapminder %>%
+  filter(country == "Ireland") %>%
+  ggplot(aes(x = year, y = pop)) +
+  geom_point() +
+  geom_line() +
+  labs(x = "Year", y = "Population")
+```
+
+## Using `group` and `colour` aesthetics 
+
+Now, why only Ireland? You might want to add more countries to the plot to compare between countries. There is a very nice way we could do that in `ggplot` using the `group` aesthetic.
+
+In the following code, we keep three countries and tell `ggplot` to create different lines for the different countries by specifying `group = country` inside the aesthetic `aes()` function which creates the environment for the plot.
+
+```{r}
+gapminder %>%
+  filter(country %in% c("Ireland", "Iceland", "Japan" )) %>%
+  ggplot(aes(x = year, y = lifeExp, group = country)) +
+  geom_point() +
+  geom_line() +
+  labs(x = "Year", y = "Life Expectancy at Birth")
+```
+
+The problem with the above plot is that we do not know what line represent what countries. To solve this, we can use `colour` aesthetic of `ggplot`.
+
+```{r}
+gapminder %>%
+  filter(country %in% c("Ireland", "Iceland", "Japan" )) %>%
+  ggplot(aes(x = year, y = lifeExp, group = country, colour = country)) +
+  geom_point() +
+  geom_line() +
+  labs(x = "Year", y = "Life Expectancy at Birth")
+```
+
+Now we have nice label for each country. This is called *legend* in plotting terminology.
+
+**Task 11:** In the following R chunk, change the previous code to add two more countries: Norway and Italy. This time instead of life expectancy, plot total population in millions. Note: you have to create a new variable to convert the population in millions and you also need to change the level appropriately.
+
+
+```{r}
+gapminder %>%
+  filter(country %in% c("Ireland", "Iceland", "Japan", "Norway", "Italy" )) %>%
+  mutate(pop_mills = round(pop/1000000, 2)) %>%
+  ggplot(aes(x = year, y = pop_mills, group = country, colour = country)) +
+  geom_point() +
+  geom_line() +
+  labs(x = "Year", y = "Population in millions")
+```
+
+
+## Plotting summary statistics
+
+Now, if we wish to compare `lifeExp` across different continent, the line plot above might not be helpful because there are many countries belong to the same continent. So we first need to summarise them using a summary statistics (`median()` for example) and then can plot that for each continent over the years.
+
+
+```{r}
+gapminder %>%
+  group_by(continent, year) %>%
+  summarise(medianlifeExp = median(lifeExp)) %>%
+  ggplot(aes(x = year, y = medianlifeExp, colour = continent)) +
+  geom_point() +
+  geom_line() +
+  labs(x = "Year", y = "Median Life Expectancy at Birth")
+```
+
+**Task 12:** In the following code chunk, create a plot to compare mean GDP per capita across different continents over the years. Label the plot appropriately.
+
+```{r}
+gapminder %>%
+  group_by(continent, year) %>%
+  summarise(meanGDP = mean(gdpPercap)) %>%
+  ggplot(aes(x = year, y = meanGDP, colour = continent)) +
+  geom_point() +
+  geom_line() +
+  labs(x = "Year", y = "Mean GDP per capita")
+```
+
+
+## Object manipulation in `R`
+
+Whenever you use `<-` of `=` operator in $\texttt{R}$ you are creating an object on the right and "assigning" it the name on the left of the operator. All the objects you create in an $\texttt{R}$ session are available in `R`'s memory for your to use. You can use the `objects()` or `ls()` functions to see what objects are available in the memory.
+
+```{r}
+objects()
+
+ls()
+```
+
+The only object you should have stored in memory from this lab is the `gapminder` dataset, we imported at the beginning. No other objects have been created so far. Now, let's create some more objects.
+
+```{r}
+x = c(1, 2, 3, 4, 5)
+y = c("A", "B", "C")
+
+ireland = gapminder %>% filter(country == "Ireland")
+```
+
+and check what objects are available now.
+
+```{r}
+ls()
+```
+
+If you want to delete an object you can use the `rm()` function to do so. Lets delete the `x` object.
+
+```{r}
+rm("x")
+ls()
+```
+
+You can also delete all the objects in the `R` memory using the following code.
+
+```{r}
+rm(list = ls())
+```
+
+
+After this complete deletion there will be nothing left, hence why the `ls()` function returns `character(0)` which mean a character vector with 0 entries, i.e. an empty list!
+
+```{r}
+ls()
+```
+
+
+

@@ -1,0 +1,439 @@
+---
+title: "Exploratory Data Analysis Across Groups"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+```
+
+## Numerical Summaries Across Groups
+
+Last week, we learned that the mean and standard deviation are useful summaries of the location and spread for quantitative variables and about some $\texttt{R}$ functions to calculate them. The following code is from last week's lab.
+
+Task: change the code below to calculate the same summary statistics for the variable `Age` (passenger age) from the `titanic_train` dataset. Did you get what you expected?
+
+```{r missing, exercise = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% summarise(min(Fare), max(Fare), mean(Fare), sd(Fare))
+```
+
+```{r missing-solution, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% summarise(min(Age), max(Age), mean(Age), sd(Age))
+```
+
+So you did not get what you expected! You got the result `NA` for all four summary statistics. 
+
+In $\texttt{R}$, `NA` is used to represent a missing value and it stands for "*N*ot *A*vailable". Functions producing summary statistic (such as `min()` ,`max()`,`median()`,`mean()`,`sd()`, etc.) usually gives `NA` if there are any `NA` (missing) values. Missing values occur for a host of reasons, but commonly when the variable was not observed. In the current context, the age of some of the passengers is not known. Welcome to the fun of dealing with real-life data, missing values are commonly seen.
+
+There are many ways to find out which observations are missing (or how many are missing) for a particular variable. Two possible ways are presented in the following code.
+
+One way is to use the `summary()` function. At the bottom of the result, it says there are 177 `NA` in the `Age` variable.
+
+Another way is to use the `is.na()` function. This will give a logical vector with element `FALSE` if the value was not missing and `TRUE` if it was missing. Then we can use the `table()` function to count how many are `TRUE`. It says the same number. Note these are the missing values for the `Age` variable only, other variables could have different missing observations.
+
+```{r finding-missing, exercise = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+# one way to find out how many missing values are there
+titanic_train %>%
+  select(Age) %>%
+  summary()
+
+# the other way to find out how many missing values are there
+titanic_train %>%
+  select(Age) %>% 
+  is.na() %>% table()
+```
+
+Now we know that there are 714 non-missing observations for the `Age` variable. How do we calculate the summary statistics for those non-missing values?
+
+We can set the `na.rm` *argument* to `TRUE` in the functions `min()` ,`max()`,`median()`,`mean()`,`sd()`, etc. This argument tells that functions that we want to remove all the missing values before the calculation. In the following code we remove the missing value for the `min()` and `max()` functions. 
+
+Task: change the code to remove missing values for the other functions `mean()` and `sd()`.
+
+```{r drop-missing, exercise = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% 
+  summarise(min(Age, na.rm = TRUE), max(Age, na.rm = TRUE), mean(Age), sd(Age))
+```
+
+```{r drop-missing-solution, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% 
+  summarise(min(Age, na.rm = TRUE), 
+            max(Age, na.rm = TRUE), 
+            mean(Age, na.rm = TRUE), 
+            sd(Age, na.rm = TRUE))
+```
+
+Now we have the summary statistics for the non-missing observations, but we have ugly names for each one! To get a nicer display of the results, we can give a name each value. In the following code, we name the first two summaries.
+
+Task: change the code to give nice names to the other two.
+
+```{r name-summary, exercise = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% 
+  summarise(min_age = min(Age, na.rm = TRUE), 
+            max_age = max(Age, na.rm = TRUE), 
+            mean(Age, na.rm = TRUE), 
+            sd(Age, na.rm = TRUE))
+```
+
+```{r name-summary-solution, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% 
+  summarise(min_age = min(Age, na.rm = TRUE), 
+            max_age = max(Age, na.rm = TRUE), 
+            mean_age = mean(Age, na.rm = TRUE), 
+            sd_age = sd(Age, na.rm = TRUE))
+```
+
+
+In the last code chunk, we calculated mean and standard deviation of the `Age` variable. The *five number summary* provides a fuller summary of the data: the minimum $Q_0$, first quartile ($Q_1$ or 25th percentile), median ($Q_2$ or 50th percentile), third quartile ($Q_3$ or 75th percentile), and maximum $Q_4$. However, there are different methods to calculate the first and third quartiles.
+
+In $\texttt{R}$, you can use `fivenum()` or `summary()` functions to produce five number summary as demonstrated below. You will notice that the results are different, because their method of calculation for first and third quartiles are different. Tukey's method is taught in the course, which is used in the \texttt{fivenum()} function. A more sophisticated method, beyond the scope of this course, is used for the \texttt{summary()} function but the differences are usually ignorable.
+
+```{r fivenumber, exercise = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+fivenum(titanic_train$Age, na.rm = TRUE)
+
+summary(titanic_train$Age, na.rm = TRUE)
+```
+
+The distance between the maximum and minimum is called the *range*. The `range()` specifies the minimum and the maximum, which you take the difference to obtain the range.
+
+```{r range, exercise = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% summarise(range(Age, na.rm = TRUE))
+
+titanic_train %>% summarise(diff(range(Age, na.rm = TRUE)))
+```
+
+```{r range-solution, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% summarise(range(Age, na.rm = TRUE))
+
+titanic_train %>% summarise(diff(range(Age, na.rm = TRUE)))
+```
+
+When you calculate the difference between third and first quartile, it is called *I*nter-*Q*uartile *R*ange (*IQR*), and can be calculated using the `IQR()` function.
+
+```{r IQR, exercise = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% summarise(IQR(Age, na.rm = TRUE))
+```
+
+```{r IQR-solution, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% summarise(IQR(Age, na.rm = TRUE))
+```
+
+So far the summary statistics have considered so far have been for a single variable. Sometimes it is also useful to aggregate those summary statistics for different categories of a categorical variable (i.e. different groups like male/females).
+
+The following code are from a previous lab counts how many passenger survived the titanic disaster, where \texttt{Survived} is 1 if they survived and 0 if they did not.
+
+```{r bitable-1, exercise = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% select(Survived) %>% table()
+```
+
+Now we might want to know how survival varied by gender. We can easily do this by tabulating both the \texttt{Sex} and \texttt{Survived} variables as shown in the code below.
+
+```{r bitable-2, exercise = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% select(Survived, Sex) %>% table()
+```
+
+Common names for such a result are a bivariate table, cross-tabulation, or a **contingency table**. Each number in a "cell" is the "cell frequency" of the number of passengers with corresponding row and column characteristics. 
+
+We can see that 233 passengers survived in the female group and 109 passengers survived in the male group. If we want to calculate the proportion, then we could again use the `prop.table()` function as follows.
+
+```{r bitable-3, exercise = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% select(Survived, Sex) %>% table() %>%
+  prop.table()
+```
+
+By default this function gives us the overall proportion for each cell, out of all passengers. You can see that about 26% of the passengers were were female and survived and about 53% of the passengers were male and did not survive.
+
+You can also add the **marginal** proportions to each column and row to see the proportion of each gender and proportion who survided or not.
+
+```{r bitable-3a, exercise = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% select(Survived, Sex) %>% table() %>%
+  prop.table() %>% addmargins()
+```
+
+It may be more informative to the look at the proportion **within each gender** that survived. We can easily calculate this using the `margin` argument of the `prop.table()` function. If we put `margin = 1` then it will give use row-wise proportion and if we put `margin = 2` then it will give column-wise proportion. Here the row-wise proportion is desired, as we want the proportion of each gender that survived. 
+
+```{r bitable-4, exercise = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% select(Survived, Sex) %>% table() %>%
+  prop.table(margin = 2)
+```
+
+Notice that the gender columns now sum to 1 confirming we have the proportions within each gender, which is checked using the \texttt{addmargins} function (notice the margins sum is over \texttt{margin = 1}). 
+
+```{r bitable-4a, exercise = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% select(Survived, Sex) %>% table() %>%
+  prop.table(margin = 2) %>% addmargins(margin = 1)
+```
+
+Now we can see that about 74% of the female passengers survived, but only about 19% of the passengers in the male group survived. From this result, do you think that the survival status was influenced by the gender of the passenger?
+
+Now, think yourself what `prop.table(margin = 1)` would give you instead, and how this could be interpreted.
+
+In the chunk below, add code to calculate what proportion of passengers survived in each of the tickets classes (`Pclass` variable). Do you think that the survival was influenced by the passenger class? 
+
+```{r bitable-5, exercise = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+
+
+```
+
+```{r bitable-5-solution, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% select(Survived, Pclass) %>% table() %>%
+  prop.table(margin = 2) %>% addmargins(margin = 1)
+```
+
+If we want calculate the mean and standard deviation of the ticket price (`Fare` variable) for each ticket class (`Pclass` variable), we can use the `group_by()` function. Any operation you do after the `group_by()` function will be carried out separately for each level of the categorical variable given inside the `group_by()` function. Compare the results of the `summarise()` function after inclusion of the `group_by()` function.
+
+```{r cat-summarise-1, exercise = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+# without the group_by() function
+titanic_train %>%
+  summarise(mean(Fare), sd(Fare))
+
+# in the presence of the group_by() function
+titanic_train %>% group_by(Pclass) %>%
+  summarise(mean(Fare), sd(Fare))
+```
+
+Notice that the mean price increases as you move up the ticket classes, but the variation in ticket price also increased sharply in first class.
+
+Now you can also calculate the five number summary for each level of the `Pclass` variable.
+
+```{r cat-summarise-2, exercise = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+# without the group_by() function
+titanic_train %>%
+  summarise(fivenum(Fare))
+
+# in the presence of the group_by() function
+titanic_train %>% 
+  group_by(Pclass) %>%
+  summarise(fivenum(Fare))
+```
+
+From the result above, why do think the **minimum** ticket price was zero for all three groups? Are they all paying passengers?
+
+In the chunk below, add code to calculate mean and standard deviation the `Age` variable for each level of the `Sex` variable. Hint: don't forget that the `Age` variable has some missing values.
+
+```{r cat-summarise-3, exercise = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+
+```
+
+```{r cat-summarise-3-solution, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>%
+  group_by(Sex) %>%
+  summarise(mean_age = mean(Age, na.rm = TRUE), sd_age = sd(Age, na.rm = TRUE))
+```
+
+
+## Graphical Summaries for Groups
+
+In last week's lab, we learned how to create barplots and boxplots. 
+
+Let's consider if the survival of the passenger was the same amongst all the ticket classes using a barplot. In the previous lab we used `fill = Sex` to fill the colour of the bar. Now we can change the fill colour to `Survived` variable, so those that survived or not get a different colour. Run the code below to answer the question whether the survival was different across the ticket classes.
+
+```{r barplot-1, exercise = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% 
+  ggplot(aes(x = Pclass, fill = factor(Survived))) +
+  geom_bar(position = "stack") + 
+  labs(y = "Number of passenger", x = "Passenger class")
+```
+
+Here the height of the bar represent the count, but the area with different colour for the same bar represent proportion of people died and survived in the corresponding classes. You can see the majority of the first class passengers survived. Although the number of people that survived amongst the third class was higher compared to those from second class, there were a lot more passengers in the third class overall. 
+
+The proportion of passenger survived for the first class passenger was more than 50%, for the second class passenger it was about 50%, and for the third class passenger it was less than 50%. To explicitly display the proportions you simply change `position = "stack"` to `position = "fill"`, as below.
+
+
+```{r barplot-2, exercise = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% 
+  ggplot(aes(x = Pclass, fill = factor(Survived))) +
+  geom_bar(position = "fill") + 
+  labs(y = "Number of passenger", x = "Passenger class")
+```
+
+Now you can clearly see the drop in the survival rate down the ticket classes. 
+
+Task: change the following code to investigate whether the survival was different depending on the gender of the passenger. 
+```{r barplot-3, exercise = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% 
+  ggplot(aes(x = Pclass, fill = factor(Survived))) +
+  geom_bar() + 
+  labs(y = "Number of passenger", x = "Passenger class")
+```
+
+```{r barplot-3-solution, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% 
+  ggplot(aes(x = Sex, fill = factor(Survived))) +
+  geom_bar() + 
+  labs(y = "Number of passenger", x = "Passenger gender")
+```
+
+There is another option for the `position` argument inside the `geom_bar()` function, `position = "dodge"` which provides side-by-side bars in each level of the categorical variable.
+
+```{r barplot-4, exercise = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% 
+  ggplot(aes(x = Sex, fill = factor(Survived))) +
+  geom_bar(position = "dodge") + 
+  labs(y = "Number of passenger", x = "Passenger gender")
+```
+
+```{r barplot-4-solution, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% 
+  ggplot(aes(x = Sex, fill = factor(Survived))) +
+  geom_bar(position = "dodge") + 
+  labs(y = "Number of passenger", x = "Passenger gender")
+```
+
+Last week, we plotted distribution of the `Age` variable using a histogram. A histogram, first split the variables into different consecutive intervals and then count the frequency of each group. These intervals are called *bins*. These bins have a width and height. The width is the length of the interval and the height is the count of how many data points within the interval.
+
+When you plotted a histogram for the `Age` variable last week, the `geom_histogram()` function chose the `binwidth` for you. In some situations this default choice might not be optimal. So you may need to change the `binwidth`. In the following code we chose the `binwidth` to be 1.
+
+Task: change the code to make the `binwidth` equal to 5. Which `binwidth` would be more appropriate according to your judgment? i.e. which provides the clearest summary of distribution of your data (so that the shape is clear, but the bin counts are not too noisy/variable)
+
+```{r binwidth, exercise = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% ggplot(aes(x = Age)) +
+  geom_histogram(binwidth = 1)
+```
+
+```{r binwidth-solution, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% ggplot(aes(x = Age)) +
+  geom_histogram(binwidth = 5)
+```
+
+Along with a histogram we could use boxplot to visualise the distribution of a variable. A boxplot is a useful but cruder summary plot of the distribution of a variable. A boxplot is crawn using the five summary statistics: median, two hinges ($Q_1$ and $Q_2$) and two whiskers (first datapoint inside of fences of $Q_1 - 1.5 IQR$ and $Q_3 + 1.5 IQR$). 
+
+Provided you have a large enough sample, the boxplot suggests whether the distribution is symmetric or asymmetric, and if there are any outliers. For a small dataset, the boxplot is not so reliable as there is very limited information in the data.
+
+We plotted a boxplot for the `Age` variable last week and learned about the overall age distribution. Let's explore how the age distribution varies across the passenger classes? We can create side-by-side boxplots for each passenger class.
+
+The following shows the vertical boxplot for all passenger classes combined. It then generates the boxplot for each of the three passenger classes. 
+
+Change the code to see whether the age distribution is different across the passenger genders.
+
+```{r boxcat, exercise = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% ggplot(aes(y = Age)) +
+  geom_boxplot()
+
+titanic_train %>% ggplot(aes(y = Age, x = factor(Pclass))) +
+  geom_boxplot() +
+  labs(x = "Passenger class")
+```
+
+```{r boxcat-solution, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% ggplot(aes(y = Age, x = factor(Sex))) +
+  geom_boxplot() +
+  labs(x = "Passenger sex") + theme_minimal()
+```
+
+If you want to make the plot more visually attractive, you can use `colour` aesthetic to give a different colour for each boxplot. By default it will add a legend which is not needed, so the `\texttt{theme(legend.position = "none")} tells it not to include a legend.
+
+```{r boxcatcol, exercise = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(titanic)
+
+titanic_train %>% ggplot(aes(y = Age, x = factor(Pclass), colour = factor(Pclass))) +
+  geom_boxplot() +
+  labs(x = "Passenger class") + theme_minimal() +
+  theme(legend.position = "none")
+```
+
+Notice that that age distribution is notable younger in the lower classes.
+
