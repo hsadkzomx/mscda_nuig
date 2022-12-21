@@ -1,0 +1,301 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/zhejing/ontologies/2022/9/untitled-ontology-3#"
+     xml:base="http://www.semanticweb.org/zhejing/ontologies/2022/9/untitled-ontology-3"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:Lab-5="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Borders -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Borders">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Country"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Country"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Colleague -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Colleague"/>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Friend -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Friend">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#People"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#isCapitalOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#isCapitalOf"/>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#isLocatedIn -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#isLocatedIn"/>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#isPartOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#isPartOf"/>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#topObjectProperty -->
+
+    <owl:ObjectProperty rdf:about="http://www.w3.org/2002/07/owl#topObjectProperty">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#BirthDate -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#BirthDate">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#People"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Population -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Population">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Place"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Salary -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Salary">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#People"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#City -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#City">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Place"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Company -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Company">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#People"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Country -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Country">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Place"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Gender -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Gender">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#People"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#People -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#People">
+        <owl:disjointWith rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Place"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Place -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Place"/>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#State -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#State">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Place"/>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Actual_Dynamics -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Actual_Dynamics">
+        <rdf:type rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Company"/>
+        <owl:sameAs rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Alice"/>
+        <owl:sameAs rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Bob"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Alice -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Alice">
+        <rdf:type rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#People"/>
+        <owl:sameAs rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Female"/>
+        <Lab-5:Friend rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Bob"/>
+        <Lab-5:Salary rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10000</Lab-5:Salary>
+        <rdfs:label xml:lang="en">Alice Smith</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Bob -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Bob">
+        <rdf:type rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#People"/>
+        <owl:sameAs rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Male"/>
+        <Lab-5:Friend rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Alice"/>
+        <Lab-5:BirthDate>1990-01-01</Lab-5:BirthDate>
+        <rdfs:label xml:lang="en">Bob Wilson</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Charlie -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Charlie">
+        <rdf:type rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#People"/>
+        <owl:sameAs rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Fictional_Dynamics"/>
+        <owl:sameAs rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Male"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Dave -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Dave">
+        <rdf:type rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#People"/>
+        <owl:sameAs rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Fictional_Dynamics"/>
+        <owl:sameAs rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Male"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Dublin -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Dublin"/>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Female -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Female">
+        <rdf:type rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Gender"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Fictional_Dynamics -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Fictional_Dynamics">
+        <rdf:type rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Company"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Galway -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Galway">
+        <rdf:type rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#City"/>
+        <rdf:type rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#State"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Germany -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Germany">
+        <rdf:type rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Country"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Ireland -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Ireland">
+        <rdf:type rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Country"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Male -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Male">
+        <rdf:type rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/Lab-5#Gender"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+
