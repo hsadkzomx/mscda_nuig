@@ -1,0 +1,408 @@
+---
+title: "Discrete Probability Models"
+output:
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+
+```
+
+
+Last week, we learned how to calculate the mean and standard deviation of a random variable when the probability distribution of the random variable is given. In the lectures we have learnt about various discrete **probability models** for describing the distribution of outcomes from experiments that have particular structures.
+
+There are two types of random variables: **discrete random variables** and **continuous random variables**. For discrete random variables the **probability mass function** gives the probability of each outcome. For continuous random variable, areas under the **probability density function**  give interval probabilities.
+
+In this lab we will explore two commonly used discrete probability models: the **binomial** and **Poisson** distributions.
+
+
+## Binomial distribution
+
+If a random variable $X$ follows binomial probability distribution, then we say $X \sim \text{Binomial}(n, p)$ and the probability mass function is as follows:
+
+$$ P(X=x) = \binom{n}{x} p^x (1-p)^{n-x}$$
+where, $x = 0,1, ..., n$ a particular value of the random variable, $n$ is the number of Bernoulli trials (which have just two outcomes: success or failure), and $p$ is the probability of success in each trial. 
+
+This seems abstract! Let's try some examples.
+
+Suppose the probability a customer makes a purchase in an online shop is 0.8. We are interested to find the probability that of the seven customers currently browsing in the online shop, two customers make a purchase. Now if we consider whether a customer makes a purchase or not as a Bernoulli trial, with two possible outcomes (success if they make purchase and failure if not), then if we can make the assumptions that **(1) each customer's purchase decision is independent of each other customer's purchase decision, and (2) the probability of success is the same for each customer** the binomial distribution would be a good model to calculate the probability that two customers out of the seven make a purchase. Now, let $X$ be the random variable which is the number of customers who make a purchase. Then we can write down the probability mass function suitable for this situation as follows:
+
+$$ P(X=x) = \binom{7}{x} 0.8^x (0.2)^{7-x}$$
+Now the probability of two customers out of the seven customers in the online shop making a purchase is:
+
+\begin{align}
+P(X=2) &= \binom{7}{2} 0.8^2 (0.2)^{5}\\
+       &= 0.0043008
+\end{align}
+
+We can calculate this probability using $\texttt{R}$ as follows:
+
+```{r}
+choose(7, 2) * (0.8 ^ 2) * (0.2 ^ 5)
+```
+
+Thankfully, there is a function in \texttt{R} to do this calculation which is much more convenient. The `dbinom()` function takes three arguments: `x`, a value of the random variable, `size` the number of trials ($n$ in the formula above), and `prob` the probability of success on any one trial. 
+
+```{r}
+dbinom(x = 2, size = 7, prob = 0.8)
+```
+
+**Task** Calculate the probability that three customers of the seven will make a purchase.
+
+```{r}
+# write your code here
+
+dbinom(x = 3, size = 7, prob = 0.8)
+
+
+```
+
+The argument `x` of the `dbinom()` function need not to be a single value. It could take a vector. This means we can calculate the probability of different values of the random variable at the same time. For example, we could have calculated both of those probabilities together:
+
+```{r}
+dbinom(x = c(2, 3), size = 7, prob = 0.8)
+```
+
+
+We can also use this feature to calculate the whole probability mass function of the random variable $X$.
+
+```{r}
+# create a vector with all possible values X can take
+x = c(0, 1, 2, 3, 4, 5, 6, 7) 
+
+# or alternatively 
+x = 0:7
+
+# calculate the probability for each corresponding value
+px = dbinom(x = x, size = 7, prob = 0.8)
+
+# let's put the probability mass function for each value of x into a
+# table-like form, called a data.frame
+rain_prob_dist = data.frame(x, px)
+rain_prob_dist
+```
+
+**Task** The probability that a fluorescent lightbulb has a life of over 500 hours is 0.9. We have 20 of these lightbulbs. Consider the random variable $Y$, the number of fluorescent light bulbs that last over 500 hours. Assume that the failure of such bulbs are independent of each other. In the code chunk below, create a data.frame that contain the probability mass function of the random variable $Y$.
+
+```{r}
+# write your code here
+
+
+```
+
+For the customer purchase example, we created the probability mass function for the random variable. We can create a lollipop plot to visualize the probability mass function.  This can be helpful to make the form of the probability distribution more obvious.
+
+```{r}
+library(tidyverse)
+library(ggalt) # for the geom_lollipop function
+
+rain_prob_dist %>% ggplot(aes(x = x, y = px)) +
+  geom_lollipop() +
+  geom_point(col = "red") +
+  theme_minimal() +
+  labs(x = "Number of customers making purchase", y = "Probability")
+  
+  
+```
+
+From the plot it is very clear that given the probability distribution it is more likely that there will be 5-7 customers making a purchase! This was not so obvious from the table.
+
+
+**Task** For the fluorescent lightbulb example, use the data set that you created which contains the probability distribution of $Y$ to create a plot of the probability mass function with appropriate axis labels.
+
+```{r}
+# write your code here
+
+
+
+```
+
+In the customer purchase example, you saw that it is more likely that there will be 5-7 customers making purchases. So a natural question you might ask is how many customers would you expect to make a purchase? To answer this question we need to calculate the **expected value** of the random variable $X$.
+
+```{r}
+# all possible values X can take
+x = 0:7
+
+# corresponding probabilities
+px = dbinom(x = x, size = 7, prob = 0.8)
+
+# expected value (expectation) of X
+eX = sum(x * px)
+eX
+```
+
+Now you might get confused! The number of customers cannot be a fraction. This is the **expected**, (or average, or mean) number of customers making a purchase.  A way to interpret this is that if we look at a large number of ocassions when there are seven customers in the online shop, the average number of customers who make a purchase (across many occasions) is 5.6. 
+
+There is a formula for the expected value of a binomial random variable, here $E(X) = np = (7 \times 0.8) = 5.6$.
+
+**Task** For the fluorescent lightbulb example, calculate the expected number of such lightbulbs that will survive over 500 hours.
+
+```{r}
+# Write your code here
+
+
+```
+
+For the customer purchase example, we found that on average 5.6 customers out of seven to make a purchase. But we need to get a sense of how much variation we can get in this number, for which we can calculate the **variance** of the random variable $X$.
+
+
+
+```{r}
+# all possible values X can take
+x = 0:7
+
+# corresponding probabilities
+px = dbinom(x = x, size = 7, prob = 0.8)
+
+# expected value (expectation) of X
+eX = sum(x * px)
+
+# expected value (expectation) of X^2
+eX2 = sum((x ^ 2) * px)
+
+# variance of X
+varX = eX2 - eX^2 
+varX
+```
+You can also use the formula $np(1-p) = (7\times 0.8 \times 0.2)=1.12$ to obtain the variance for the binomial probability model.
+
+So the **standard deviation** of the number of customers (out of seven) to make a purchase is 1.06 (`sqrt(1.12)`).
+
+
+**Task** For the fluorescent light example, calculate the variance and standard deviation of Y.
+
+```{r}
+# Write your code here
+
+
+
+```
+
+Now, one might ask that is it possible to calculate that there will be either 2 **or** 3 customers out of the seven making a purchase. Yes! we learned how to do that in last week's lab.
+
+\begin{align}
+P(X=2 \,\textbf{ OR }\, X=3) &= P(X=2 \cup X=3) \\
+&= P(X=2) + P(X=3) - P(X=2 \cap X=3)\\
+&= P(X=2) + P(X=3) \quad\quad \text{Since}\, P(X=2 \cap X=3)=0
+\end{align}
+
+So the answer is 
+```{r}
+# P(X = 2) + P(X = 3)
+dbinom(x = 2, size = 7, prob = 0.8) + dbinom(x = 3, size = 7, prob = 0.8)
+
+# which is the same as
+sum(dbinom(x = c(2, 3), size = 7, prob = 0.8))
+```
+**Task** For the fluorescent lightbulb example, find the probability that at least 10 such lightbulbs and at most 12 lighbulbs will survive beyond 500 hours. In probability notation, find $P(Y = 10 \,\textbf{ OR }\, Y = 11 \, \textbf{ OR }\, Y = 12 )$. 
+
+```{r}
+# Write your code here
+
+
+```
+
+**Task** For the fluorescent light example, find $P(15 \le Y \le 19)$.
+ 
+```{r}
+# Write your code here
+
+
+
+```
+
+Sometimes, we are interested in calculating the probability of a particular value or any possible values below it. For example, what is the probability of that there will be at most 3 customers out of the seven make a purchase?  We can write this down in probability notation as $P(X\le 3)$. 
+
+Here, we are accumulating the probability of all the outcomes less than or equal to 3 - this is called a cumulative probability. The cumulative probability for all possible cumulative outcomes is called **cumulative probability distribution**. In $\texttt{R}$, we can easily calculate the cumulative probability distribution using the `cumsum()` function (short for cumulative sum).
+
+```{r}
+# all possible values X can take
+x = 0:7
+
+# corresponding probabilities
+px = dbinom(x = x, size = 7, prob = 0.8)
+
+# corresponding cumulative probabilities
+cpx = cumsum(px)
+
+# create a data.frame that contains both the values and cumulative probabilities
+shop_cumulative_dist = data.frame(x, cpx)
+shop_cumulative_dist
+```
+
+
+We can  visualize this cumulative distribution. Note that lollipop plot will be appropriate for this.
+
+```{r}
+library(tidyverse)
+
+shop_cumulative_dist %>% ggplot(aes(x = x, y = cpx)) +
+  geom_step() +
+  geom_point(col = "red") +
+  labs(x = "Number of customers making purchase", y = "Cumulative probability") + 
+  theme_minimal()
+```
+
+Instead of using the `cumsum()` function we could use the `pbinom()` (notice the similar name to `dbinom()`) function as follows:
+
+```{r}
+# to calculate P(X<=3)
+pbinom(q = 3, size = 7, prob = 0.8)
+
+# all possible values X can take
+x = 0:7
+
+# corresponding cumulative probabilities
+cpx = pbinom(q = x, size = 7, prob = 0.8)
+
+# create a data.frame that contains both the values and cumulative probabilities
+shop_cumulative_dist = data.frame(x, cpx)
+shop_cumulative_dist # same as above
+```
+
+**Task** For the fluorescent lightbulb example, create a dataset that contains the cumulative probability distribution of $Y$ and then plot the cumulative probability distribution with appropriate labels for axis.
+
+
+
+
+
+## Poisson distribution
+
+The binomial distribution is a useful model for the number of events when we know the total number of independent experiments or Bernoulli trials, each with a constant probability of success. In the customer purchase example, we knew how many customers were in the online shop. Let's now consider a different kind of situation, where we are interested in the number of events happening in some interval of time or space.
+
+Let's consider an example where we are interested in how many cars will visit a particular gas station in a one hour time period. We think of a car passing the gas station as a Bernoulli trial, with 'success' being the car pulling into the gas station.
+
+Do we know how many cars will pull into the gas station during a one hour period tomorrow? No, and it is not possible to know that. But we may know (eg from past experience) how many cars on average visit the gas station in an hour.
+
+Provided (1) events (eg cars pulling in) are independent of each other, (2) the events occur at roughly constant rate over the time interval, and (3) two events can't happen at exactly the same time, the probability distribution of the number of events occuring in the interval is a **Poisson distribution**.  
+
+If a random variable $X$ follows Poisson distribution on some interval of time/space, then we say $X \sim \text{Poisson}( \lambda)$ with the probability mass function:
+
+$$ P(X=x) = \frac{e^{-\lambda} \lambda^{x}}{x!}$$
+for $x=0,1, ...$. Here $e$ is the exponential constant which is approximately equal to 2.718282.   $\lambda$ is the average number of events that occur over the interval, and in other words $\lambda$ is the expected value of $X$, ie $E(X) = \lambda$.
+
+For the gas station example, $X$ is the number of cars that arrive at the gas station in an hour, and $\lambda$ is the average number of cars that arrive at the gas station during an hour. If the average number of cars arriving per hour, $\lambda = 50$, then the probability mass function of $X$, the number of cars that arrive at the gas station in an hour, is
+
+
+$$ P(X=x) = \frac{e^{-50} 50^{x}}{x!}$$
+for $x=0,1, ...$. So to calculate the probability that there will be 60 cars in the next hour will be 
+\begin{align}
+P(X = 60) &= \frac{e^{-50} 50^{60}}{60!}\\
+&= 0.02010487
+\end{align}
+
+We can use the `dpois()` function to calculate this probability. This function takes two arguments: `x` the value of the random variable and `lambda` the average number of events occur in a given period.
+
+```{r}
+# P(X = 60)
+dpois(x = 60, lambda = 50)
+```
+
+**Task** There was a 30% increase in monthly burglaries in County Galway in 2017, with a total of 672 (1.84 per day) reported to the Gardai. Suppose the number of burglaries in Galway follows a Poisson distribution with mean of 1.84 per day. (Note that to use a Poisson distribution we are assuming that burgularies are independent, that the rate of burglaries is approximately constant, and that two burglaries do not happen at exactly the same time.) Find the probability that there will be exactly 3 burglaries in Galway in one day.
+
+```{r}
+# write your code here
+
+
+
+```
+
+For the gas station example, we can calculate the probability mass function of $X$. Of course we can't plot an infinite set of values, so let's just plot it upto 80 cars as above this the probability is close to zero.
+
+```{r}
+# create a vector to store nearly all possible values of X
+x = 0:80
+
+# calculate the corresponding probabilities
+px = dpois(x = x, lambda = 50)
+
+car_arrival_dist = data.frame(x, px)
+car_arrival_dist
+```
+
+Now we can visualise the probability mass function.
+
+```{r}
+library(tidyverse)
+library(ggalt) # for the geom_lollipop function
+
+car_arrival_dist %>% ggplot(aes(x = x, y = px)) +
+  geom_lollipop() +
+  geom_point(col = "red") +
+  theme_minimal() +
+  labs(x = "Number of car arrival", y = "Probability")
+```
+
+**Task** For the burglary example create a dataset containing the probability mass function and then plot it.
+
+```{r}
+# write your code here
+
+
+
+```
+
+For the gas station example, if we want to know the probability there will be fewer than 40 cars in an hour we need to find $P(X < 40) = P(X \le 39)$. This is a cumulative probability. We can use the `ppois()` function to calculate cumulative probability.
+
+```{r}
+# P(X <= 39)
+ppois(q = 39, lambda = 50)
+
+# alternatively 
+sum(dpois(x = 0:39, lambda = 50))
+```
+
+**Task** For the burglary example find the probability that there will be fewer than 3 burglaries in Galway in one day.
+
+```{r}
+# write your code here
+
+
+
+```
+
+
+For the gas station example, if we want to find the probability that there will 65 or more cars arriving in the next hour, then we need to find $P(X>65)$. There is no upper limit for values that $X$ can take, so we can use the **complement rule** to calculate this probability as $P(X>65) = 1 - P(X\le 64)$.
+
+```{r}
+# P(X>65) = 1 - P(X<=64)
+1 - ppois(q = 64, lambda = 50)
+```
+
+**Task** For the burglary example, find the probability that there will be more than 20 burglaries in a week.
+
+```{r}
+# write your code here
+
+
+```
+
+We can also plot the cumulative probability distribution for the gas station example.
+
+```{r}
+library(tidyverse)
+
+x =  0:80
+cpx = ppois(q = x, lambda = 50)
+gas_cumu_dist = data.frame(x, cpx) 
+
+gas_cumu_dist %>% ggplot(aes(x = x, y = cpx)) +
+  geom_step() +
+  geom_point(col = "red") +
+  labs(x = "Number of car arrivals", y = "Cumulative probability") +
+  theme_minimal()
+```
+
+**Task** For the burglary example, plot the cumulative probability distribution.
+
+```{r}
+# write your code here
+
+
+```
+

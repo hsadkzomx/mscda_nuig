@@ -1,0 +1,374 @@
+---
+title: "Counting Rules and Exploratory Data Analysis"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+## Multiplication rule
+
+Let's suppose we need to complete a job, which consist of three different tasks. If you are able to do the first task in $n_1$ possible ways, the second task in $n_2$ possible ways, and the third task  in $n_3$ possible ways then the multiplication rule says the number of ways you are able to complete the job are as follows:
+
+$$n_1 \times n_2 \times n_3$$ 
+
+Now look at the following menu for lunch. How many ways you can order a lunch from the menu, choosing one option for each course? 
+
+                                           MENU
+
+               
+               
+                    Grilled Country Bread with Sun-dried Tomato Spread
+                                            or
+                    Field Green Salad Bowl with Extra Virgin Olive Oil
+                                          -------
+                Breast of Chicken braised with Wild Mushrooms and Marsala Wine
+                                            or
+                Grilled Slice Flank Steak basted with Lemon, Garlic, and Basil
+                                            or
+                Tortelli stuffed with Ricotta Cheese, Topped with Pesto Cream,                                          Tomatoes and Pine Nuts
+                                          -------
+                              Traditional Chocolate Tiramisu
+                                            or 
+                             Penn State Bakery Celebration Cake
+                
+
+
+
+
+We can use $\texttt{R}$ to answer this question. In the code chunk below we created three different character vectors with name of the options for three different courses. Then we used the `expand.grid()` function to create all possible combinations of these three variables. Here each row shows you each possible way you can order a lunch. Now you can answer how many ways you can order a lunch from the menu!
+
+```{r}
+appetizer <- c("Grilled Bread", "Green Salad")
+main <- c("Chicken breast", "Flank steak", "Tortellini")
+dessert <- c("Tiramisu", "Cake")
+
+expand.grid(Appetizer = appetizer, Main = main, Dessert = dessert)
+
+```
+
+Now if we use the multiplication rule then we could get the number of possible ways pretty quick! 
+
+```{r}
+2 * 3 * 2
+```
+**Task 1:** Now, suppose Tom has 5 different shirts, 3 different pairs of trousers, and 4 different pairs of shoes. Write your code below to find out how many possible ways Tom could dress for the lunch? Hint: Use the multiplication rule.
+
+```{r}
+# write your code here
+5 * 3 * 4
+
+```
+
+In the lunch menu example, each course had a number of different options. Relating this example to probability theory, the choice of a course is an *experiment* and the options for the course are *outcomes* of the experiment. So we conducted 3 experiments, i.e. choosing appetizer, main course, and dessert, with 2, 3, and 2 possible outcomes, respectively.
+
+Let's consider the experiment of tossing a die three times. Each experiment has 6 different possible outcomes as a standard die has six sides. So if we toss the die three times then the following number of outcomes are possible using the multiplication rule.
+
+```{r}
+6 * 6 * 6
+```
+
+Notice that in the die example, we had the same number of possible outcomes for each of the experiments (one toss of a die). But in the lunch menu example, the number of possible outcomes for each experiment (choice of a course) were not the same.
+
+**Task 2:** If we toss a coin 5 times how many outcomes are possible?
+
+```{r}
+# write your answer here
+
+6 * 6 * 6 * 6 * 6
+
+```
+
+## Sampling with and without replacement
+
+Now consider a bowl containing 8 balls numbered from 1 to 8. Our experiment is to draw a ball from the bowl and write down the number on a piece of paper. We are going to repeat the experiment 8 times.
+
+There are two possible ways we could conduct the experiment, either:
+
+* picking a ball write down the number then *put it back*; or
+* picking a ball write down the number then *do not put it back*.
+
+Notice that if you put the ball back each time then the number of possible outcomes for all the 8 experiments is the same, but if do not put the ball back then the number of possible outcomes decreases by 1 for each consecutive experiment. 
+
+The first sampling scheme - drawing a ball and putting it back - is termed **sampling with replacement**, since you are sampling a ball and replacing it in the bowl. The second sampling scheme - eg drawing a ball and not putting it back - is known as **sampling without replacement**. 
+
+Let's denote the number of experiments as $r$ and the number of possible outcomes for the first experiment as $n$, where all the possible outcomes are distinct. In the ball example, we might want to know how many ways we can pick $r$ balls from $n$ balls, (1) using sampling with replacement, or (2) sampling without replacement.
+
+(Note an important thing about the possible outcomes in this example.  The outcomes "123" and "321" are different although they are both made up of the same balls. So the **order** of the outcome matters. Think about lotto results, does the order matter? ...No, only the actual numbers selected...)
+
+
+When we conduct experiments based on sampling with replacement and the order of the outcome matters, then all possible ways of picking $r$ items from $n$ possible items is:
+
+$$n \times n \times n \ldots \times n = n^{r}$$
+
+## Permutation Rule
+
+
+When we conducting experiments based on sampling without replacement and the order of the outcome matters, then all possible ways of picking $r$ items from $n$ possible items is:
+
+
+$$n \times (n-1) \times (n-2) \ldots \times (n-r+1)$$
+Now the above expression could be re-written as follows:
+
+$$
+\begin{align}
+&n \times (n-1) \times (n-2) \ldots \times (n-r+1)\\
+&= \frac{n \times (n-1) \times (n-2) \ldots \times (n-r+1)\color{blue}{\times (n-r) \times (n-r-1) \times \ldots 2 \times 1. } }{\color{blue}{(n-r) \times (n-r-1) \times \ldots 2 \times 1. }}\\
+&= \frac{n!}{(n-r)!}\\
+&= ^nP_r
+\end{align}
+$$
+where, $n!$ should be read as $n$ factorial. If you are not familiar with factorial: $n! = n \times (n-1) \times (n-2) \ldots \times 3 \times 2\times1$. So, $5! = 5\times4\times3\times2\times1=120$. In $\texttt{R}$, you could use `factorial()` function for this.
+
+```{r}
+factorial(5)
+```
+
+
+$^nP_r$ is the notation for **permutation**.
+
+$$
+ ^nP_r = \frac{n!}{(n-r)!}
+$$
+
+**Task 3:** Now in the code chunk below find out how many ways you can make a 3 letter word from **ABCDE** where you can use each letter only once? Hint: here n=5, r=3, order matters and you are sampling without replacement.
+
+```{r}
+# write your calculation here
+factorial(5) / factorial(5-3)
+
+```
+
+## Combination Rule
+
+Continunig with the ball example, let's suppose that order of the outcomes does not matter. Then if we pick 3 balls out of the 8, the outcomes "123", "132", "213", "231", "312", "321" are **the same**. But, for instance, "123" (and all its permuations) is still different to "234" (and all its permutations). 
+
+The number of possible outcomes when order **does not** matter should be smaller that the number of possible outcomes when order **does** matter. 
+
+Since now order does not matter, the permutation formula will overcount the number of a possible outcomes by a factor of $3!=6$, that is the number of ways we can arrange any 3 distinct balls. 
+
+In general, when we choose $r$ items from $n$, and order does not matter, we need to divide the permutation formula by a factor $r!$ to count the number of possible outcomes. 
+
+So, when we conducting experiments based on sampling without replacement and the order does not matter, then all possible ways of picking $r$ items from $n$ possible items is:
+
+$$
+ ^nC_r = \frac{^nP_r}{r!} = \frac{n!}{(n-r)! r!}
+$$
+$^nC_r$ is the notation for  **combination**. $\binom{n}{r}$ is also used to denote $^nC_r$.
+
+In $\texttt{R}$, you can get the value of a combination using the `choose()` function. So $^5C_3 =$ `choose(5, 3)`
+
+```{r}
+# Both of the following give the same result!
+factorial(5) / (factorial(2) * factorial(3))
+
+choose(5, 3)
+
+```
+
+
+**Task 4:** Now write the necessary code in the chunk below to calculate how many ways you can form a team of 5 players among 12 players. Hint: here $n=12$ and $r=5$, order does not matter and you are sampling without replacement. 
+
+```{r}
+# write your calculation here
+choose(12, 5)
+
+```
+
+## Non-distinct (or indistinguishable) elements
+
+Now, so far all the situations we considered all the $n$ elements or possible outcomes of an experiment are **distinct, or distinguishable**. For example all the letters in ABCDE are distinguishable. What if some of the elements are **indistinguishable**?
+
+For example, in **MISSISSIPPI** the two **P**s are indistinguishable from each other and the same is true for the 4 **I**s and 4 **S**s. Now, the total number of letters $n = 11$, we are sampling without replacement and the order matters.  There are $n! = 11!$ ways of arranging $n = 11$ letters.  But some of the letters are indistinguishable, so we need to divide this by the number of ways of arranging each of the repeated letters.  There are $2!$ ways of arranging the Ps, $4!$ ways of arranging both the Ss and the Is, so the number of ways of different ways of arranging the letters is 
+
+$$  \frac{11!}{\color{blue}{4!}\color{red}{4!}\color{green}{2!}}$$
+
+You can get the number using $\texttt{R}$:
+
+```{r}
+factorial(11) / ( factorial(4) * factorial(4) * factorial(2) ) 
+```
+
+
+**Task 5:** Now write necessary calculation in the code chunk below to compute the following:
+
+In how many ways may the letters of **MISSISSIPPI** be arranged if:
+
+* The new word must begin with an “M”.
+* The new word must not begin with an “M”.
+* The new word must begin with a vowel?
+
+```{r}
+# write you calculation here
+#1
+factorial(10) / ( factorial(4) * factorial(4) * factorial(2) ) 
+
+factorial(10) / ( factorial(4) * factorial(4) * factorial(2) ) * choose(10,1)
+factorial(10) / ( factorial(3) * factorial(4) * factorial(2) ) 
+
+```
+
+## In Summary
+
+Multiplication rule: If we have $r$ different experiments with $n_1, n_2, \ldots, n_r$ distinct possible outcomes for experiment $1,2, \dots r$, there are $n_1 \times n_2\times \ldots\times n_r$ possible outcomes for the $r$ experiments.
+
+For $n$ distinct items, sampling without replacement, if order matters then there are $^nP_r$ possible ways to sample $r$ items. Sometimes the key word **arrange** is used to indicate order matters. 
+
+For $n$ distinct items, sampling without replacement, if order does not matters then there are $^nC_r$ possible ways to sample $r$ items. Sometimes the key word **choose** is used to indicate order does not matters. So is the $\texttt{R}$ function `choose()`.
+
+For $n$ distinct items, sampling with replacement, if order matters then there are $n^r$ possible ways to sample $r$ items.
+
+For $n$ distinct items, sampling with replacement, if order does not matter then there are $\binom{n+r-1}{r}$ possible ways to sample $r$ items. We did not show how to derive this formula because it is not as straightforward as the first three.  This is the Binomial formula and you will see it again when we study probability distributions.
+
+Almost all the counting problems you will encounter in this topic can be solved using these formulas. It is all about breaking down a complex problem to simpler ones and to recognise when to use which formula.
+
+
+**Task 6:** How many different ways of writing down (in sequence) the letters of the word **ABRACADABRA**? How many of the ways include the consecutive string of letters **ABCD**?
+
+```{r}
+# write you calculation here
+#n=11, A=5, B=2, C=1, D=1, R=2
+factorial(7) / ( factorial(4) * factorial(1) * factorial(2) ) * choose(8,1)
+```
+
+**Task 7:** Ten children are to be grouped into two clubs, the Lions and the
+Tigers, five in each club. Each club is then to elect a president and
+secretary. In how many ways can this be done?  
+
+```{r}
+# write you calculation here
+choose(10,5) * choose(5,2) * choose(5,2)
+```
+
+## More on graph: Let's explore penguins in Antartica
+
+So for we have explored many interesting datasets! We have also seen how  much insight can be gained using different graphical summaries. For this section we are going to explore another interesting dataset `penguins` from the `palmerpenguins` package. The `penguins` dataset contains size measurements for adult foraging penguins near Palmer Station, Antarctica. 
+
+```{r}
+library(tidyverse)
+library(palmerpenguins)
+
+penguins %>% glimpse()
+```
+
+The details of the variable names are as follows:
+
+
+    species           a factor denoting penguin species
+    island            a factor denoting island in Palmer Archipelago, Antarctica 
+    bill_length_mm    a number denoting bill length (millimeters)
+    bill_depth_mm     a number denoting bill depth (millimeters)
+    flipper_length_mm an integer denoting flipper length (millimeters)
+    body_mass_g       an integer denoting body mass (grams)
+    sex               a factor denoting penguin sex (female, male)
+    year              an integer denoting the study year
+
+
+**Task 8:** By examining the data set using the knowledge you gathered so far in this lab, answer the following questions:
+
+* How many penguins were measured in the dataset? 344
+* What are the different species they belong to? 
+* What are the different islands the measurement were made?
+* How many measurements were made on each penguin?
+* Were the measurement made in a single season?
+
+```{r}
+penguins %>% select('species') %>% unique()
+
+penguins %>% select('island') %>% unique()
+
+#bill_length, bill_depth, flipper_length_mm, body_mass_g
+
+penguins %>% select('year') %>% unique()
+```
+
+Now, before doing any exploratory analysis, you can locate the island on google maps or even watch some documentaries about different measurements (`bill_length_mm`, `bill_depth_mm`, `flipper_length_mm`) were made on each penguins to have some context about the dataset. 
+
+Now using `ggplot`, we are going to explore whether there is any association between bill length (`bill_length_mm`) and bill depth (`bill_depth_mm`) of each penguins.
+
+```{r}
+penguins %>% ggplot(aes(x = bill_length_mm, y = bill_depth_mm)) +
+  geom_point()
+
+```
+From the plot above, we can see that there is a slight tendency that the bill depth may decrease if we increase the bill length of a penguin. We also see some clustering in the dataset. Can we identify why they are clustered? Maybe they are clustered based on their gender, or the island they are from or their species. How can we differentiate different points on scatter plot based on another variable? We can use the colour aesthetic! 
+
+```{r}
+penguins %>% ggplot(aes(x = bill_length_mm, y = bill_depth_mm, colour = sex)) +
+  geom_point()
+```
+
+In the plot above we tried to differentiate different points using the `sex` variable and found that it does not explain the clustering.
+
+**Task 9:** Write code in the following code chunk to find out whether the other two variables (`island`, `species`) are responsible for the clustering. Use each of these two categorical variables in two seperate plots as we did with the `sex` variable in the plot above.
+
+```{r}
+# write your code here
+
+penguins %>% ggplot(aes(x = bill_length_mm, y = bill_depth_mm, colour = island)) +
+  geom_point()
+
+penguins %>% ggplot(aes(x = bill_length_mm, y = bill_depth_mm, colour = species)) +
+  geom_point()
+```
+
+In the above task you found that `species` variable can explain the clustering. Are you surprised after looking at the following plot?
+
+```{r}
+penguins %>% ggplot(aes(x = bill_length_mm, y = bill_depth_mm, colour = species)) +
+  geom_point()
+```
+
+Now we can see that within each species, bill depth actually increases if the bill length is increased! When we were looking at the aggregated data, it looked as though the relationship was in the opposite direction. This demonstrates that we need to incorporate knowledge about species to get a better idea of the true relationship between bill depth and bill length.  This is an example of "Simpson's paradox" in statistics, where a trend in separate groups of data disappears or is even reversed when the groups of data are combined.
+
+To make it more visibly clear we can use the `facet_grid()` function!
+
+```{r}
+penguins %>% ggplot(aes(x = bill_length_mm, y = bill_depth_mm, colour = species)) +
+  geom_point() +
+  facet_grid( ~ species)
+```
+
+In the last plot the `facet_grid( ~ species)` function splits the dataset into three different datasets according to the category levels in the `species` variable and then creates three seperate plots. So `facet_grid()` is a very powerful graphical tool in your toolbox. 
+
+
+**Task 10:** Now change the colour aesthetic to `sex` in the above graph (instead of the `colour=species`) to find out whether the  `bill_length_mm` and `bill_depth_mm` are different based on the sex of a penguin.
+
+
+```{r}
+# write your code here
+penguins %>% ggplot(aes(x = bill_length_mm, y = bill_depth_mm, colour = sex)) +
+  geom_point() +
+  facet_grid( ~ species)
+```
+
+
+Now, we want to find whether all three species of penguins can be found in all three islands!
+
+```{r}
+penguins %>% ggplot(aes(x = bill_length_mm, y = bill_depth_mm, colour = species)) +
+  geom_point() +
+  facet_grid(~ island)
+```
+
+From the plot above, you can see the Adelie species can be found on all three islands, Chinstrap can only be found on Dream island and Gentoo can only be found on Biscoe island. 
+
+Now, if we want to investigate whether the weight of the penguins are varying over the years we can create a plot as below.
+
+```{r}
+penguins %>% ggplot(aes(y = body_mass_g, x = factor(year), colour = sex)) +
+  geom_boxplot() +
+  facet_grid(~ species)
+```
+
+This plot tells us that in general a male penguin is heavier than a female penguin for all three species. It also tells us that the weight remains the same for each species over the years. It also tells us that the Gentoo species is heavier in general compared to the other species.
+
+
+

@@ -1,0 +1,562 @@
+---
+title: "Probability and Random Variables"
+output:
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+
+```
+
+
+Last week, we covered counting rules so that we can use those rules to calculate probabilities for solving problems. You will see how those counting rules can be very helpful to answer questions (related to calculating probabilities) that initially might seem too complex! 
+
+## Sample space and Events
+
+If we toss a die the **sample space** has 6 outcomes: {1, 2, 3, 4, 5, 6}. A possible **event** might be if the outcome is 6: {6}, or all the even numbers {2, 4, 6}.
+
+### Example: Rolling Two dice
+
+Lets consider an experiment consists of twice rolling a normal six-sided die. The outcome 13 means that the number 1 shows uppermost on the first roll and the number 3 shows uppermost on the second roll. 
+
+We can write out the sample space $S$ for the experiment in the form of a six by six table with the row number corresponding to the result of the first roll and the column number corresponding to the result of the second roll using $\texttt{R}$ as below. Do not worry about how to use the  `outer()` function here, that is a little advanced at this point.
+
+```{r}
+Stab = outer(1:6, 1:6, FUN = function(x,y) {as.numeric(paste0(x,y))})
+Stab
+```
+
+
+Now, we can define the following events:
+
+* $A$: the two roll values sum to more than 7;
+* $B$: the two roll values are the same;
+* $C$: the second roll value is larger than the first roll value.
+
+We can identify by circling on the table the outcomes which give rise to each of the events $A$, $B$, and $C$ in turn.
+
+We can write out each of the events $A$, $B$ and $C$ as sets (by listing the outcomes they consist of).
+
+* $A = \{62, 53, 63, 44, 54, 64, 35, 45, 55, 65, 26, 36, 46, 56, 66\}$
+* $B = \{11, 22, 33, 44, 55, 66\}$
+* $C = \{12, 13, 23, 14, 24, 34, 15, 25, 35, 45, 16, 26, 36, 46, 56\}$
+
+Now, we want to find the outcomes for the event $\bar{A} \cap B$. First we need to store them as vector in $\texttt{R}$ as follows:
+
+```{r}
+S = c(Stab)
+A = c(62, 53, 63, 44, 54, 64, 35, 45, 55, 65, 26, 36, 46, 56, 66)
+B = c(11, 22, 33, 44, 55, 66)
+C = c(12, 13, 23, 14, 24, 34, 15, 25, 35, 45, 16, 26, 36, 46, 56)
+```
+
+Then we have to perform set operations. In $\texttt{R}$, you can perform set operation union, intersect, set difference using `union()`, `intersect()`, and `setdiff()` functions, respectively.
+
+To calculate $\bar{A} \cap B$ and then $A\cup B$:
+
+```{r}
+# first need to calculate $\bar{A}$
+Abar = setdiff(S, A)
+
+# then $\bar{A} \cap B$
+Abar_and_B = intersect(Abar, B)
+Abar_and_B
+
+# A \cup B
+union(A, B)
+```
+
+
+**Task:** Identify the following events as sets (again by listing the outcomes they consist of) in the code chunk below:
+
+*  $(A\cup B) \cap C$
+*  $A\cap S$
+
+```{r}
+# write your code here
+
+# $(A\cup B) \cap C$
+intersect(union(A, B), C)
+
+# $A\cap S$
+intersect(A, S)
+```
+
+
+## Probability 
+
+After determining the sample space of an experiment and the sample points (outcomes) in the event of interest, we can calculate the probability of the corresponding event. 
+
+In the two dice example, we can find the probability of event $A$, denoted as $P(A)$, as follows:
+
+\begin{align}
+P(A) &= \frac{\text{Number of outcomes in the event} A}{\text{Total number of outcomes in the sample space}}\\
+&=\frac{15}{36}\\
+&= 0.4166667
+\end{align}
+
+
+We can use $\texttt{R}$, to calculate this probability.
+```{r}
+length(A) / length(S)
+```
+**Task:** In the two dice example, calculate the probability of  $\bar{A} \cap B$ in the code chunk below. Hint: you need to find the number of outcomes the $\bar{A} \cap B$ event has using the `length()` function.
+
+```{r}
+# write your code here
+length(intersect(Abar, B)) / length(S)
+```
+
+## Probability Rules
+
+So far, to calculate the probability of an event, we counted the number of outcomes in an event and number of all possible outcomes for the experiment using counting rules. Sometimes, the probabilities of some events are given and we need to find probabilities of other events, such as complements or types of combinations of events. Different probability rules allow us to do so.
+
+## Complement Rule
+
+The **complement rule** state that for any event $A$, the complementary event of $A$ is denoted by $\bar{A}$, sometimes called **NOT $A$**, and the $P(\bar{A})$ can be calculated using the following rule:
+
+$$P(\bar{A}) = 1 - P(A)$$
+If $P(A) = 0.3$ then the $P(\bar{A})$ is as follows:
+
+```{r}
+# probability of A
+pA = 0.3
+
+# probability of complement $P(\bar{A})$
+pAbar = 1 - pA
+pAbar
+```
+
+**Task:** If the probability of a rainy day is 0.6, then calculate the probability of a rain-free day.
+
+```{r}
+# write your code here
+pRain <- 0.6
+pRainFree <- 1 - pRain
+pRainFree
+```
+
+
+## Addition Rule
+
+The **addition rule** states that for any two events $A$ and $B$, the probability of $A\cup B$ is as follows:
+
+$$ P(A\cup B) = P(A) + P(B) - P(A \cap B) $$
+Note that sometimes to denote $\cap$ we write **AND** and to denote $\cup$ we write **OR**. So, the probability that $A$ **AND** $B$ happens is same as the $P(A \cap B)$. To say the probability that $A$ **OR** $B$ happens is same as the $P(A \cup B)$. Mathematical **OR** is not the same as usual "or". $A$ **OR** $B$ means either $A$ could happen or $B$ could happen or both could happen.
+
+**Example:** If the probability of an event $A$ is 0.7, the probability of another event $B$ is 0.6, and the probability of $A\cap B$ is 0.5, then we can calculate $P(A\cup B)$ as follows:
+
+```{r}
+# probability of A
+pA = 0.7
+
+# probability of B
+pB = 0.6
+
+# probability of A and B
+pAandB = 0.5
+
+# $P(A \cup B)$
+pAorB = pA + pB - pAandB
+pAorB 
+```
+
+**Task:** The probability of getting a dry day is 0.4, a windless day is 0.2, and a dry and windless day is 0.1. Calculate the probability of a day which is either dry or windless or both dry and windless.
+
+```{r}
+# write your code here
+pDry <- 0.4
+pWindless <- 0.2
+pDnW <- 0.1
+pDuW <- pDry + pWindless - pDnW
+pDuW
+```
+
+## Product Rule
+
+The **product rule** states that for any two events $A$ and $B$, the probability of $A\cap B$ is as follows: 
+
+$$ P(A\cap B) = P(A|B) P(B) $$
+Here, $P(A|B)$ is the conditional probability of the event $A$ given the event $B$ has already happened. 
+
+**Example:** In the over-75 Irish population there are 4 times as many women as men and 40% of the population have high blood pressure. The (conditional) probability of having high blood pressure given male is 0.5. What is the probability of being male **AND** having high blood pressure? We can answer this question using $\texttt{R}$ as follows:
+
+```{r}
+# M : being male
+# H : high blood pressure
+# 1 out of every 5 adults is a man
+pM = 1/5
+
+# probability of having high blood pressure given male is 0.5
+pHgM = 0.5
+
+# probability of being male and having high blood pressure
+pMandH = pHgM * pM
+pMandH
+```
+
+**Task:** Consider a city where the probability of being female is about 46% and the probability of finding a job among female people is about 80%. Now calculate the probability of being an employed female person in the city.
+
+```{r}
+# write your code here
+pF = 0.46
+pJgF = 0.8
+
+pJnF = pJgF * pF
+pJnF
+```
+
+## Mutually Exclusive Events
+
+In probability theory **mutually exclusive** or **disjoint** events are events that cannot occur together. If $A$ and $B$ are mutually exclusive events then:
+
+$$ P(A \cap B) = 0 $$
+
+**Example:** If two events A and B are mutually exclusive and have probabilities $P(A) = 0.3$ and $P(B) = 0.5$, then the probability of $P(A\cup B)$ is as follows:
+
+```{r}
+pA = 0.3
+pB = 0.5
+
+# they are mutually exclusive
+pAandB = 0
+
+# $P(A\cup B)$
+pAorB = pA + pB - pAandB
+pAorB
+
+# of course this is same as
+pA + pB
+```
+
+**Task:** Let consider two events A and B. If $P(A) = 0.4$ and $P(A|B) = 0.3$, then are those events mutually exclusive? Support your answer with numerical calculation.
+
+```{r}
+# write you calculation here
+pA = 0.4
+pAbar = 0.6
+pAgB = 0.3
+pAbargB = 0.7
+
+pAnB = pAgB * pB
+if (pAnB != 0) {
+  print("Not mutually exclusive")
+}else {
+  print("Mutually exclusive")
+}
+
+```
+
+## Independent Events
+
+In probability theory, two events are **independent** when the probability of one event occurring is not influenced by the occurrence of the other event. If $A$ and $B$ are independent events then
+
+$$P(A \cap B) = P(A) P(B) $$ 
+
+In the high blood pressure example, is high blood pressure independent of gender? We can answer this as follows:
+
+```{r}
+# 40% of the over 75 population has high blood pressure 
+pH = 0.4
+pM = 0.2
+
+# we calculated pMandH before
+
+# if they are independent then pH * pM == pMandH needs to be true
+# note "==" is double equal and it is a logical operator
+pH * pM == pMandH
+```
+
+So high blood pressure and gender are not independent of each other. 
+
+**Task:** If two events $A$ and $B$ are independent and if $P(A) = 0.5$ and $P(B) = 0.2$, find $P(A \cup B)$.
+
+```{r}
+# write your calculation here
+pA = 0.5
+pB = 0.2
+pAnB = pA * pB
+pAuB = pA + pB - pAnB
+pAuB
+```
+
+## Conditional probability
+
+The notion of conditional probability is very useful. However, when we encounter this concept for the first time, it might not seem straightforward. Let's consider we are interested to find the probability of a sunny day in Ireland (you might already know how precious a sunny day here!). What is the sample space here? It could be any 365 days in a year (we ignore leap years). Let say the probability of a sunny day across the whole year is 0.3. So in probability notation you write $P(\text{a sunny day}) = 0.3$. Do you think the probability of a sunny day is the same for winter days and summer days? No! So we may not only be interested to know the probability of a sunny day in a year, but the probability of a sunny day in summer or winter. So how can we write probability of a sunny day in summer in probability notation? We write  $P(\text{a sunny day} | \text{summer})$, and this is the conditional probability of a sunny day **given** it is summer. Now we are restricting our sample space to only those days in the summer months. ie **conditioning** on it being summer.  
+
+The conditional probability of $A$ given $B$
+
+$$ P(A|B) = \frac{P(A \cap B)}{P(B)} $$
+**Task** In a city, the probability of being male is about 0.56 and the probability of being employed and being a male is about 0.51. What is the conditional probability of being employed given that the person is male?
+
+```{r}
+# write your calculation here
+pM = 0.56
+pEnM = 0.51
+pEgM = pEnM / pM
+pEgM
+```
+
+## Bayes' theorem:
+
+Bayes' theorem allows us to find the conditional probability $P(A|B)$ if we know $P(B|A)$ for two events $A$ and $B$.
+
+$$ P(A|B) = \frac{P(B|A) \, P(A) }{P(B)}$$
+
+provided $P(B)>0$
+
+Note: ${\small \textstyle P(B) = P(B|A) P(A) + P(B|\bar{A}) P(\bar{A})  }$
+
+**Example** your parents buy groceries from two different supermarkets: shop A and shop B. 70% of the time they buy from shop A and 30% of the time they buy from shop B. 1% of the avocadoes in shop A are usually rotten and 3% of the avocadoes in shop B are usually rotten. In a morning you find a rotten avocado in your kitchen. Can you tell from which shop is the rotten avocado? No! But you can calculate the probability that the avocado is from shop A or from shop B. Bayes' theorem allow us to calculate such probabilities. 
+
+We can visualize the situation with tree diagram using the `treeDiag()` function from `openintro` package.
+
+```{r}
+library(openintro)
+
+# probability of buying groceries from shop A and B
+pA = 0.7
+pB = 0.3
+
+# conditional probabilities of rotten avocado from shop A and B
+pRgA = 0.01
+pRgB = 0.03
+
+treeDiag(main = c("Grocery shop", "Avocado"), 
+         p1 = c(pA, pB),                                  # first branch probs
+         p2 = list(c(pRgA, 1 - pRgA), c(pRgB, 1 - pRgB)), # second branch probs
+         out1 = c("Shop A", "Shop B"),
+         out2 = c("Rotten", "Good"))
+```
+
+Using Bayes' theorem we write 
+
+$$ P(\text{shop A}| \text{Rotten}) = \frac{P(\text{Rotten}|\text{shop A}) \, P(\text{shop A}) }{P(\text{Rotten})} $$
+
+Now we can calculate the probability that the rotten avocado was bought from the shop A as follows:
+
+```{r}
+pR = (pRgA * pA) + (pRgB * pB)
+
+pAgR = (pRgA * pA) / pR
+pAgR
+```
+
+**Task:** In a certain factory 4% of electronic components manufactured are defective. An inspector tests each component before it leaves the factory. He incorrectly rejects 2% of non-defective components and incorrectly passes 1% of defective components. 
+
+* First visualize the situation using a tree diagram.
+* Find the probability that the inspector rejects a component.  
+* Find he probability that a component is not defective given that he rejects it.
+
+```{r}
+# write your code here
+library(openintro)
+
+# probability of electronic components are defective and non-defective
+pD = 0.04
+pND = 1 -pD
+
+# conditional probabilities of defective component being reject or not reject
+pPgD = 0.01
+pRgND = 0.02
+
+treeDiag(main = c("Electirc component", "Test"), 
+         p1 = c(pD, pND),                                  # first branch probs
+         p2 = list(c(pRgD, 1 - pRgD), c(pRgND, 1 - pRgND)), # second branch probs
+         out1 = c("Defective", "Non Defective"),
+         out2 = c("Reject", "Pass"))
+
+pR = (pRgD * pD) + (pRgND * pND)
+pR
+
+pNDgR = (pRgND * pND) / pR
+pNDgR
+```
+
+## Random Variables
+
+The concept of random variables is very useful in probability theory. If we toss a coin then we could denote the outcomes as "Heads" or "Tails". But if we denote the "Tails" as 0 and "Heads" as 1 then we are representing the outcomes of an experiment with **numeric values**. From the random experiment of tossing a coin, we can say let $X$ take the value 0 or 1 depending upon seeing a tail or a head, and we call $X$ a random variable.  
+
+Now consider tossing two coins. The possible outcomes are "HH", "HT", "TH", and "TT". Now let $X$ be the number of heads that show up:if we see HH then $X$=2, HT then $X$=1, TH then $X$=1, TT then $X$=0. 
+
+This concept of associating things with numeric values is not new. We use it all the time. We associate the weight of a grocery bag with a number, say 5kg, the height of a person with a number, say 1.8m, and so on. Now, we use it for the outcomes of a random experiment, and hence the name random variable.
+
+Since each value of a random variable is associated with an outcome of a random experiment, each value of a random variable has some probability associated with it. These values of a random variable and their corresponding probabilities are collectively called the **probability distribution** of that particular random variable.
+
+When the random variable can take only discrete values, it is known as a **discrete random variable**
+
+Consider a discrete random variable $X$ has the following distribution: 
+
+|		$X$ | $P(X=x)$ |
+|:---------:|:----------:|
+|-2  | 0.30|
+| 0  | 0.20|
+| 2  | 0.10|
+| 4  | 0.25|
+| 6  | 0.15|
+|    |     |
+
+We can visualize the distribution here using a **lollipop** plot. The `geom_lollipop` function is coming from `ggalt` package.
+
+```{r}
+library(tidyverse)
+library(ggalt)
+
+# store the value of the random variable in a vector
+X = c(-2, 0, 2, 4, 6)
+
+# Store the probabilities in the same way
+# note that the order must be the same
+pX = c(0.30, 0.20, 0.10, 0.25, 0.15)
+
+# create a dataset for plotting
+prob_dat <- data.frame(X = as.integer(X), pX = pX)
+
+prob_dat %>% ggplot(aes(x = X, y = pX)) +
+  geom_lollipop() +
+  labs(y = "P(X = x)", x = "X") +
+  theme_minimal()
+```
+
+Let's find $E(X), E(X^2), \mu , \sigma^2$
+Remember from lectures, $\mu$ is the same as $E(X)$ and $\sigma^2$ is the same as $\text{Var}$.
+And for a discrete random variable
+$$\mu = E(X) = \sum_x x*P(X=x)$$
+$$\text{Var} = E((X-\mu)^2))= \sum_x (x-\mu)^2*P(X=x)$$
+
+We can find $E(X), E(X^2)$ as follows:
+
+\begin{align}
+E(X) &= (-2 \times 0.3) + ( 0 \times 0.2) + (2 \times 0.1) + (4 \times 0.25) + (6 \times 0.15) \\
+&= 1.5 \\
+E(X^2)  &= ( (-2)^2 \times 0.3) + ( (0)^2 \times 0.2) + ((2)^2 \times 0.1) + ((4)^2 \times 0.25) + ((6)^2 \times 0.15) \\
+&= (4 \times 0.3) + ( 0 \times 0.2) + (4 \times 0.1) + (16 \times 0.25) + (36 \times 0.15)  \\
+&=11\\
+ \end{align}
+
+But an organized way to do the calculation is as follows:
+		
+|$X$ | $P(X=x)$ | $X \times P(X=x)$ | $X^2 \times P(X=x)$ | 
+|:----|:----------|:-------------------|:---------------------|
+|-2 | 0.30 |-0.6  |1.2|
+|0  | 0.20 |0.0 |0.0|
+|2  | 0.10 |0.2 |0.4|
+|4  | 0.25 |1.0 |4.0|
+|6  | 0.15 |0.9 |5.4|
+| | |$E(X)=1.5$ |$E(X^2)=11$|  
+
+The most convenient way to calculate is to use $\texttt{R}$
+
+```{r}
+X = c(-2, 0, 2, 4, 6)
+pX = c(0.30, 0.20, 0.10, 0.25, 0.15)
+
+# E(X)
+eX = sum(X * pX)
+eX
+
+# E(X^2)
+eX2 = sum((X ^ 2) * pX)
+eX2
+```
+We have already found $\mu$:
+
+\begin{align}
+\text{Mean}(X) = \mu &= E(X)\\ 
+&= 1.5\\
+\end{align}
+
+Now we have to calculate $\sigma^2$, the variance of $X$. The formula for this is: 
+
+\begin{align}
+\text{Var}(X) &= E([X-E(X)]^2) = E(X^2) - (E(X)^2)
+\end{align}
+
+So for our example:
+
+\begin{align}
+\text{Variance}(X) = \sigma^2 &= E(X^2) - (E(X)^2) \\
+&= 11 - (1.5)^2 \\
+&= 8.75\\
+\text{SD}(X) &= \sigma = \sqrt{\text{Variance}(x)} \\
+      &= 2.96 \\
+\end{align}
+
+Now to calculate the $\sigma^2$ we used that $E([X-E(X)]^2) = E(X^2) - (E(X)^2)$. Does this look obvious? No! But we can demonstrate it numerically for this example using $\texttt{R}$.
+
+```{r}
+X = c(-2, 0, 2, 4, 6)
+pX = c(0.30, 0.20, 0.10, 0.25, 0.15)
+eX = sum(X * pX)
+
+# [X-E(X)]^2 consider this as Y
+Y = (X - eX)^2
+
+# E([X-E(X)]^2)
+sum(Y * pX)
+
+sum((X^2) * pX) - eX^2
+
+```
+So you can see that $E([X-E(X)]^2)=8.75$ which is the same number as the value we calculated for $E(X^2) - (E(X)^2)$ earlier. 
+The point here is when we have a powerful numerical engine like $\texttt{R}$, we can numerically demonstrate different mathematical identities and theorems. 
+
+**Task:** Consider a random variable $X$ has the following distribution: 
+
+
+|         |   |   |   |   |   |
+|---------|---|---|---|---|---|		
+|		$X$ | 0 | 1 | 2 | 3 | 4 |
+|$P(X=x)$ | 0.4 | 0.25 | 0 |0.1 | 0.25|		    
+|          |    |      |    |   |      |		
+
+
+First create a plot to visualize the probability distribution of the variable X. Then find
+
+* $E(X)$.	
+* $E(X^2)$.
+* mean value of X, $\mu$. 
+* variance of X, $\sigma^2$.
+* standard deviation of X, $\sigma$.
+
+
+```{r}
+# write your code here
+library(tidyverse)
+library(ggalt)
+
+# store the value of the random variable in a vector
+X = c(0, 1, 2, 3, 4)
+
+# Store the probabilities in the same way
+# note that the order must be the same
+pX = c(0.4, 0.25, 0, 0.1, 0.25)
+
+# create a dataset for plotting
+prob_dat <- data.frame(X = as.integer(X), pX = pX)
+
+prob_dat %>% ggplot(aes(x = X, y = pX)) +
+  geom_lollipop() +
+  labs(y = "P(X = x)", x = "X") +
+  theme_minimal()
+
+eX = sum(X * pX)
+eX
+
+eX2 = sum((X^2) * pX)
+eX2
+
+mu = eX
+mu
+
+var = sum((X^2) * pX) - eX^2
+var
+
+sd = sqrt(var)
+sd
+```

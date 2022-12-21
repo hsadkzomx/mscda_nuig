@@ -1,0 +1,431 @@
+---
+title: "Sampling Distribution of a Sample Mean and Confidence Interval for the Population Mean"
+output:
+  html_document: default
+---
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(gcookbook)
+library(boot)
+```
+
+
+In previous weeks, we learned about calculating probabilities of different values of a random variable when we know the distribution. As such we know:
+
+1. the mathematical form of the probability distribution and
+
+2. the parameters of the distribution.
+
+Knowing the parameters of a distribution is only possible if we measure all the values of a random variable in the population. For example, knowing the population average height of an Irish person is only possible if we measure the heights of every Irish person. As you have guessed that is a very cumbersome task. The power of statistical inference is that we can take a **random sample** from a population and based on that sample we make  **inferences about the population parameter** we are interested in. **Inferential statistics** is the topic for this week's lab.
+
+(Note that in statistics, we use Latin (alphabet) capital letters (e.g.$X, Y, H$) to denote random variables, small letters for a particular value of a random variable (e.g. $x, y, h$), and small Greek letters (e.g. $\mu, \sigma$) to denote population parameters.) 
+
+## Population of Height of Irish adult males
+
+Let's assume that the distribution of Irish male adult height is Normal with mean 180 cm and standard deviation 20 cm.  In other words we're assuming $H \sim N(180, 20^2)$, where we denote the random variable height as $H$. Now we can answer any question related to this random variable.
+
+Let's generate a random sample of the heights of 50 people from this distribution using $\texttt{R}$:
+
+```{r}
+# to make the results reproducible
+set.seed(12345678)
+
+# to generate a sample of the height of any 50 random people
+sample_height = rnorm(n = 50, mean = 180, sd = 20)
+sample_height
+
+hist(sample_height)
+```
+
+If we take a random sample of 50 heights from our population of Irish adult male heights it will look something like this.
+
+Now think in the opposite way. Having this random sample of 50 heights, can we say anything about the probability distribution of the random variable and its parameters? This is the task that inferential statistics deals with and we are going to learn how to do that.
+
+
+**Task** Generate samples of different sizes: 20, 30, 50, 100, 5000, assuming that $H \sim N(180, 20^2)$. Use a histogram to look at the shape of the distribution for samples of different sizes. 
+
+```{r}
+# your code goes here
+
+
+
+```
+
+You can see that guessing the shape of the distribution from a sample is not always obvious, especially if the sample size is small.
+
+## Estimating the population mean
+
+The task we will focus on in this lab is estimating the population mean $\mu$ using a single sample.
+
+Now to estimate the **population mean height ($\mu$)**, we use the **sample mean height**. In the following code chunk we calculate the sample means for different random samples from the population. Note that the sample means are different in different random samples, even though the sample size is the same.
+
+```{r}
+# commenting out the set.seed() function, to see the randomness in sample mean
+# set.seed(123456)
+sample_1 = rnorm(n = 50, mean = 180, sd = 20)
+mean(sample_1)
+sample_2 = rnorm(n = 50, mean = 180, sd = 20)
+mean(sample_2)
+
+```
+
+Using a single number to estimate a population parameter is called **point estimation**. You can see that different samples have different sample means. We need to know how much variability there in the sample mean from sample to sample before making any statement about the population mean.  
+
+The sample mean depends on the size of the sample $n$. Let's denote the sample mean height of Irish adult males as $\bar{H}_n$. Here we used a bar on top of the random variable to show this is a mean, and we used a subscript to denote that it was calculated from a sample of size $n$. We used capital letter $\bar{H}$ since the sample mean itself is a random variable, as it results from the experiment of taking a random sample. Since $\bar{H}_n$ is a random variable it also has a probability distribution. 
+
+## Sampling Distribution of a Sample Mean
+
+The probability distribution of $\bar{H}_n$ is called a **sampling distribution** since the the probability distribution arises due to sampling. The probability distribution of any random variable $X$ is simply called a probability distribution or population distribution, but the probability distribution of any sample statistic (e.g. sample mean) is called a sampling distribution. 
+
+Let's explore the sampling distribution of $\bar{H}_n$ for a given value of $n$. To do this we are going to create an $\texttt{R}$ function that will give us sample means of many different samples of a given sample size from a $N(180, 20^2)$ distribution. Do not worry about how to define a function in $\texttt{R}$. We do not need to know how to write a function in order to use it!  For example, someone wrote the `rnorm()` function for us to use, and we don't need to know how to write the function ourselves.
+
+```{r}
+# let's define a function to calculate sample mean from different samples
+gen_samp_mean = function(number_sample, n, mean, sd) {
+  sapply(1:number_sample, function(x) mean(rnorm(n = n, mean = mean, sd = sd)))
+}
+
+# calculating 10 sample means from 10 different samples with sample size 50
+set.seed(1234567)
+sample_means = gen_samp_mean(number_sample = 10, n = 50, mean = 180, sd = 20)
+sample_means
+
+```
+
+We have generated 10 sample means from 10 random samples of size 50. We could have created a vector for each sample and then use the `mean()` function to calculate the sample mean for each sample, but the process would be very tedious. So we created a function and the tedious job will be carried out by $\texttt{R}$. 
+
+**Task** Use the function `gen_samp_mean()` that we defined in the previous code chunk to calculate sample means from 100 random samples of size 50. Then calculate 250 different sample means from 250 random samples with sample size 100.
+
+```{r}
+# your code goes here
+
+
+```
+
+Now we will investigate what distribution the **sample mean** height might follow by calculating sample means of 1000 random samples of height, each of size 50.
+
+```{r}
+set.seed(1234567)
+
+# storing all the sample means in a vector
+mean_vec = gen_samp_mean(number_sample = 1000, n = 50, mean = 180, sd = 20)
+
+# look at the distribution
+hist(mean_vec, breaks = 20, xlab = "Sample means", main = "Histogram of sample means")
+
+# mean and sd of the sample means
+mean(mean_vec)
+sd(mean_vec)
+
+```
+
+You can see the shape of the histogram looks Normal and you can see that mean of the distribution is almost equal to the true mean $\mu$, which is 180. 
+
+**Task** Using the `gen_samp_mean()` function generate sample means from 1000 random samples of size 100 and store the results in a vector with a suitable name. Then plot a histogram to see if the shape looks Normal or not. What do you notice about the standard deviation of the sample mean distribution compared to the example above with samples of size 50?  
+
+```{r}
+# your code goes here
+
+
+```
+
+This shows the larger the sample size, the smaller is the variability of the sample mean, and the more precise is the estimate of the true mean.  In fact, the standard deviation of the sample mean for samples of size $n$, which is also called the **standard error**, is equal to $\sigma/\sqrt{n}$.  
+It can be seen from the two previous examples, the standard deviation of the sample means is approximately equal to $\sigma/\sqrt{n}$, that is $20/\sqrt{50} = 2.83$ for the example with sample size 50 and $20/\sqrt{100} = 2$ for the example with sample size 100. 
+
+
+Instead of making a histogram, we can use a density plot to check whether the sampling distribution of the sample means looks Normal.
+
+```{r}
+set.seed(1234567)
+mean_vec = gen_samp_mean(number_sample = 1000, n = 50, mean = 180, sd = 20)
+
+# create a data frame to store the vector as a column
+mean_df = data.frame(sample_mean = mean_vec)
+
+# let's plot the density
+mean_df %>% ggplot(aes(x = sample_mean)) +
+  geom_density() +
+  theme_minimal() +
+  labs(x = "Sample mean")
+
+```
+
+
+**Task** Generate a density plot of the sample means for different sample sizes. Does the shape of the distribution vary for different sample sizes?
+
+```{r}
+# your code goes here
+
+
+
+```
+
+We are investigating the sampling distribution of the sample mean because whenever we use the sample mean to make inferences about the population mean, we need to know how much uncertainty there is in this estimate.   Knowing the sampling distribution of the sample mean allows us to quantify the uncertainty in our estimate.
+
+## Central Limit Theorem
+
+The Central Limit Theorem says that if a random variable $X$ has mean $\mu$ and finite variance $\sigma^2$ then $\bar{X}_n \sim N(\mu, \sigma^2/n)$ as $n$ approaches $\infty$. This is true of any random variable $X$, regardless of its distribution.
+
+Let's demonstrate the Central Limit Theorem:
+
+**Task** The following code generates the sampling distribution of the sample mean when the distribution of the population is binomial. Right now the sample size is 1. This is not a big number so the shape of the sampling distribution of the sample mean is not close to Normal. Run the code below with different values of the sample size $n$: 5, 10, 20, 30, 50. Notice when the shape of the distribution seems approximately Normal. 
+
+```{r}
+# change different value of n
+# sample size
+n = 1
+
+
+# DO NOT CHANGE THE CODE BELOW
+# generate 1000 sample means from 1000 different samples with sample size n.
+# the population distribution is binomial
+smean_binom = sapply(1:1000, function(x) mean(rbinom(n = n, size = 20, prob = 0.05)))
+
+# plot the histogram of 1000 sample means
+hist(smean_binom, xlab = "Sample means")
+```
+
+In the above code you saw that "as $n$ approaches $\infty$" does not mean the sample size need to be very large for the assumption of Normality to be good. In fact a of size 30 might be large enough!
+
+
+## Student's $t$-distribution
+
+The CLT says that no matter what the distribution of $X$, $\bar{X}_n \sim N(\mu, \sigma^2/n)$, or the $Z$ statistic $$Z = \frac{\bar{X}_n - \mu}{\sigma/\sqrt{n}} \sim N(0,1) $$ for $n$ sufficiently large.  However, we do not usually know the true standard deviation $\sigma$. 
+
+We can simply substitute the sample standard deviation $S$ for $\sigma$.  Now, the sample standard deviation, like the sample mean, is a random variable - it varies from one sample to the next.  If our sample is large enough, we can estimate the standard deviation from the sample quite precisely, and CLT still applies.  However, if $n$ small, CLT does not apply.   
+
+So what if we want to make inferences about the population mean, but we only have small samples? William Gosset (a statistician working for Guinness!) derived the Student's $t$-distribution. He found that if $X \sim N(\mu, \sigma^2)$ then the $T$ statistic 
+
+$$T = \frac{\bar{X}_n - \mu}{S/\sqrt{n}} \sim t_{n-1} $$
+$t_{n-1}$ is the Student's $t$-distribution with $n-1$ degrees of freedom.
+In the formula above, the degrees of freedom (which is a parameter of the distribution) depends on the sample size, and here is equal to  $n-1$. 
+
+We can use this formula to make inferences about $\mu$ for small samples, provided the underlying distribution $X$ is approximately Normal.
+
+Let's look at the shape of Student's $t$-distribution for the $T$ statistic for a sample of size $n = 3$.  The $\texttt{R}$ function for calculating the probability density of a Student-t distribution is `dt()`. This function takes two main arguments: `x` and `df`. `x` is the required quantile (value on the x axis), and `df` is degrees of freedom. 
+
+```{r}
+# sample size
+n = 3
+
+# create a vector with different possible values from -5 to 5
+x = seq(-5, 5, 0.01)
+
+data.frame(x = x) %>% ggplot(aes(x = x)) +
+  stat_function(fun = dt, args = list(df = n - 1), aes(col = "Student's t with 2 df")) +
+  stat_function(fun = dnorm, aes(col = "Standard Normal")) +
+  labs(x = "x", y = "f(x)") +
+  theme_minimal()
+```
+
+
+Here you can see the shape of the Student's $t$-distribution is similar to the shape of the Normal distribution, being a bell-shaped curve. But it has "thicker tails" in comparison to the Standard Normal.
+
+**Task** Plot the density function for different values of a random variable $X$ taking the values from -5 to 5. First assume that $X$ follows a Student's $t$-distribution with 15 degrees of freedom. Then on the same plot assume that $X$ follows Standard Normal distribution. Repeat the process for different sample sizes: 20, 25, 30, 35, 100. What do you notice?
+
+```{r}
+# your code goes here
+
+
+```
+
+
+
+
+## Bootstrap
+
+Now, if we know nothing about the distribution of a random variable $X$ but we are interested to get the sampling distribution of sample mean, is it possible?  CLT says provided $n$ is large enough the distribution of the sample mean will be Normal. There is also another way to get the sampling distribution of the sample mean. We assume that the distribution of $X$ in the sample is a good representation of the distribution of $X$ in the population. Then, a resampling procedure known as **bootstrapping** allows us to generate the sampling distribution the sample mean.  This method can be used for many other statistics, not just the mean - so is especially useful when we don't have a theory about the distribution of the sample statistic, such as the CLT. 
+
+How does bootstrapping work? Suppose we have an original sample of size $n$.  We consider this sample as the population. Then we take many random samples from the original sample, with each sample being the same size $n$ as the original sample, and the sampling being **with replacement**.  These are called bootstrap samples.  We calculate the required statistic for each bootstrap sample, which gives us a bootstrapped sampling distribution of the statistic. 
+
+Let's bootstrap to generate the sampling distribution of the sample mean for a binomial population in the following code chunk.
+
+```{r}
+set.seed(123456)
+
+# we draw a random sample of size 30 from a binomial population
+# and this is our "original sample" which we assume represents the population
+sam_pop = rbinom(n = 30, size = 20, prob = 0.05)
+
+
+# to take samples of the same size and with replacement we use
+# the function sample()
+sam_1 = sample(sam_pop, size = 30, replace = TRUE)
+sam_1
+mean(sam_1)
+
+# we repeat the process many times, say R = 1000 times.
+# to repeat the process we will use a for loop
+# and store all the sample means in a vector
+# first create an empty vector
+boot_sam_vec = NULL
+
+# for each iteration of the loop, we will store the resulting bootstrap sample mean
+# in the ith place of the vector boot_sam_vec
+for (i in 1:1000) {
+  boot_sam_vec[i] = mean(sample(sam_pop, size = 30, replace = TRUE))
+}
+
+# draw the histogram
+hist(boot_sam_vec, xlab = "Sample mean", main = "Histogram of sample mean")
+
+
+```
+
+You can see that the sampling distribution of the sample mean of the binomial population looks Normal using the Bootstrap method. The result is consistent with the Central Limit Theorem.
+
+**Task** Repeat the process about but for a Poisson population with parameter $\lambda = 2.5$. Do your bootstrap results agree with the CLT?
+
+```{r}
+# your code goes here
+
+
+
+```
+
+As you have seen in lectures, you can also use the `infer` package in $\texttt{R}$ for bootstrapping.  Another package for bootstrapping is the `boot` package, which we use later in this lab.
+
+## Confidence Interval for the Population Mean.
+
+Now we will use the sampling distribution of the sample mean to make inferences about the population mean. Let's suppose $n$ is large enough for the CLT to apply, so for any random variable $X$ with $E(X) = \mu$ and $var(X) = \sigma^2$, $\bar{X}_n$ follows $N(\mu, \sigma^2/n)$. So 95% of the sample means will fall within the interval $\mu \pm 1.96 \sigma/\sqrt{n}$. We can demonstrate this for the Irish male heights example using $\texttt{R}$.
+
+
+```{r}
+# our sample size is 100
+# mu = 180, and sigma = 20
+# therefore
+# X_bar ~ N(180, 20/10)
+# Now we are interested to find out whether 
+# P( 180 - 1.96 * 2 <= X_bar <=  180 + 1.96 * 2 ) is equal to 0.95
+pnorm(q = 183.92, mean = 180, sd = 2) - pnorm(q = 176.08, mean = 180, sd = 2)
+```
+Since, $\mu \pm 1.96 \sigma/\sqrt{n}$ contains 95% of the sample mean heights, $\bar{X}_n \pm 1.96 \sigma/\sqrt{n}$ will contain $\mu$ 95% of the time. If we take a single random sample, the interval $\bar{x}_n \pm 1.96 \sigma/\sqrt{n}$ will either contain contain the population mean $\mu$ or not contain it, but 95% of the time that we follow this procedure of taking a random sample and calculating the interval, the interval will contain $\mu$. This is called a 95% confidence interval for $\mu$ as we are 95% confident that the interval contains $\mu$. The confidence intervals are random - they vary from sample to sample. It is likely that your single sample interval does contain $\mu$, and it could be anywhere within the interval.
+
+We can construct interval estimates for the population mean $\mu$ with different levels of confidence, and 90% or 99% confidence are other typical levels. When the CLT applies and we can assume the sample mean is Normally distributed, we determine the quantiles from a Standard Normal distribution corresponding to a specific confidence level.  For a 95% CI, we want the 0.025 and 0.975 quantiles of the Standard Normal distribution, which are $\pm 1.96$ seen above.  More generally,for a confidence level $(1-\alpha)100\%$ the required quantiles are $z_{\alpha/2}$ for the lower limit and $z_{1- (\alpha/2)}$ for the uipper limit. This $\alpha$ is called the **significance level**. The general formula for a $(1-\alpha)100\%$ CI for $\mu$ is $$  \bar{X}_n \pm z_{1 - \alpha/2} \sigma/\sqrt{n} $$ Let's see this in a plot.
+
+```{r}
+ggplot(data.frame(x = c(-5, 5)), aes(x = x)) +
+  stat_function(fun = dnorm, args = list(mean = 0, sd = 1)) +
+  ylab("f(z)") + xlab("z") +
+  labs(title = "Standard Normal Distribution") +
+  geom_area(
+    stat = "function", fun = dnorm, args = list(mean = 0, sd = 1),
+    fill = "lightblue", xlim = c(-1.96, 1.96)
+  ) +
+  scale_x_continuous(breaks = c(-1.96, 1.96), labels = c(-1.96, 1.96)) +
+  theme_minimal()
+```
+
+
+For example, suppose we want to calculate a 99% confidence interval. First calculate the value $\alpha = 1 - 0.99 = 0.01$, then divide it by 2, $\alpha/2 = 0.005$. Now we need to find $z_{\alpha/2} = z_{0.005}$ and $z_{1 - (\alpha/2)} = z_{0.995}$ using the `qnorm()` function as follows:
+
+```{r}
+qnorm(0.005)
+qnorm(0.995)
+```
+**Task** What quantile value ($z_{1 - \alpha/2}$) would be needed to construct a 90% confidence interval?
+
+```{r}
+# your code goes here
+
+
+
+```
+
+As previously mentioned, we do not usually know the population standard deviation $\sigma$. However we can estimate it with the sample standard deviation $S$.  When $n$ is sufficiently large, the CLT will still apply, even if we are estimating the standard deviation from the sample.  
+
+However, if $n$ is small CLT doesn't apply.  But provided the distribution of $X$ is approximately Normal, we can use the quantiles from a Student's $t$-distribution instead of the Standard Normal distribution to calculate confidence intervals. The formula for calculating a confidence interval for the population mean is as follows:
+
+$$  \bar{X}_n \pm t_{(n-1, 1 - \alpha/2)} S/\sqrt{n} $$
+
+where the Student's $t$-distribution has $n-1$ degrees of freedom, $S$ is the sample standard deviation, and $n$ is the sample size.
+
+Let's calculate a 95% confidence interval for the population mean height of school children, using the `heightweight` from the `gcookbook` package.
+
+```{r}
+# let's store the height variable in a vector
+height = heightweight$heightIn
+
+# sample size
+n = length(height)
+
+# calculate the sample mean and standard deviation
+x_bar = mean(height)
+s = sd(height)
+
+# calculate quantile from the t-distribution with
+# n-1 degrees of freedom to calculate 95% confidence
+# interval
+t = qt(p = 0.975, df = n - 1)
+t
+
+# calculate the lower limit of the interval
+x_bar - t * s / sqrt(n)
+x_bar + t * s / sqrt(n)
+
+# compare with CLT interval
+x_bar - 1.96 * s / sqrt(n)
+x_bar + 1.96 * s / sqrt(n)
+```
+
+Using $\texttt{R}$, we can calculate the 95% confidence interval using a single line of code with the function `t.test()` as below:
+
+```{r}
+# look for the line start with "95 percent confidence interval"
+# see the interval below it
+# ignore the rest for the time being
+t.test(height)
+```
+
+**Task** Calculate the 95% confidence interval for the population mean weight of schoolchildren using the same dataset `heightweight`. Note that variable  `weightLb`contains the weights from different children.
+
+```{r}
+# your code goes here
+
+
+```
+
+
+## Confidence Interval using Bootstrap
+
+Now, if we want to calculate a 95% confidence interval for the mean but we cannot use the $t$-distribution as the population is not Normal, we can still calculate the 95\% confidence interval using the bootstrap method. To do this we can to use the `boot` package in $\texttt{R}$ (an alternative is the `infer` package used in lectures). To use the relevant `boot` function, we have to make a function to calculate the mean, and then the `boot()` function will draw many bootstrap samples and calculate the mean for each sample. Essentially, this generates a distribution for the sample mean. The interval that contains the middle 95% of the means will be our 95% confidence interval.
+Again we use the height data from the `heightweight` dataset.
+
+
+```{r}
+# first define a function to calculate sample mean
+# for each bootstrap sample
+cal_mean = function(data, i) mean(data[i])
+
+# height is our data here
+height = heightweight$heightIn
+
+# use the boot() function to generate mean
+# from different bootstrap sample.
+# Let's draw 1000 bootstrap sample
+# the argument R = 1000 will enable us to specify that
+mean_boot = boot(height, statistic = cal_mean, R = 1000)
+
+# calculate the 95% confidence interval using the boot.ci() function
+boot.ci(mean_boot, type = "perc")
+```
+See the similarity between the 95% confidence interval using the bootstrap method and the one we calculated using the $t$-distribution.  (Also note that as this is quite a large sample, the CLT approximation applies, and we do not need to assume the observations are Normally distributed.  A 95% CI based on the Normal distribution is slightly narrower, replacing the t-quantile 1.97 with the z-quantile 1.96.) 
+
+**Task** Calculate the 95% confidence interval for the population mean weight of schoolchildren using data from the same dataset `heightweight`, via the bootstrap method. The function you need is already defined here.
+
+
+
+```{r}
+# first define a function to calculate sample mean
+# for each bootstrap sample
+cal_mean = function(data, i) mean(data[i])
+
+# your code goes here
+
+
+
+```
+
+
+

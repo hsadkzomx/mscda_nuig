@@ -1,0 +1,442 @@
+---
+title: "Continuous Probability Models"
+output:
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+
+
+It is a good practice to load all the libraries at the top of a markdown file, so it is clear on opening the script which ones are needed.
+
+```{r}
+library(tidyverse)
+library(gcookbook)
+
+```
+
+Last week, we learned about two common discrete probability distributions: the Binomial and Poisson distributions. We are now going to explore the most commonly used continuous probability distribution: the Normal distribution.
+
+## Probability density function (PDF)
+
+For any continuous random variable $X$, the probability of any single value $x$ of the random variable is equal to zero. That is 
+
+$$ P(X=x)=0$$
+
+For a discrete random variable we describe the probability distribution by a probability mass function.  For a continuous random variable we describe the probability distribution by the probability density function, which we denote by $f(x)$; probabilities are given by areas under the curve. 
+
+Intuitively, we can think of $f(x)$ as the probability of $X$ being in an infinitely small interval, $(x, x+dx)$, where $dx$ goes to zero.  The higher the density at point $x$, the higher the likelihood of that value of $x$ occurring. In this sense, the probability density function for a continuous random variable is similar to the probability mass function for a discrete random variable.
+
+Since $P(X=x)=0$, therefore the following are the same:
+
+$$ P(x_1 <X<x_2) = P(x_1 \le X \le x_2) = P(x_1 \le X < x_2) = P(x_1 < X \le x_2) $$
+
+## PDF of the Normal Distribution
+
+If a random variable $X$ follows a Normal distribution then we say $X \sim N(\mu, \sigma^2)$ and the probability density function is as follows:
+
+$$ f(x) = \frac{1}{\sigma \sqrt{2\pi}} e^{-\frac{1}{2} (\frac{x-\mu}{\sigma})^2}$$
+
+where, $\mu$ is the mean and $\sigma$ is the standard deviation of the random variable $X$. So to calculate probability density of a random variable with a Normal probability distribution, we have to know two parameters: $\mu$ and $\sigma$.
+
+We have an $\texttt{R}$ function `dnorm()` to calculate the density for random variable with a Normal probability distribution. This function has three arguments: `x`, `mean`, and `sd`. `x` is the value of the random variable, `mean` is the $\mu$ and `sd` is the $\sigma$. **Note that when we assume that $X$ follows normal distribution then we write  $X \sim N(\mu, \sigma^2)$ with the variance $\sigma^2$ as the parameter, but in the `dnorm()` function we need the standard deviation $\sigma$ for the argument `sd`.**
+
+## Example
+
+Suppose the time you take to commute to the University of Galway follows a Normal distribution with mean $\mu = 20$ and standard deviation $\sigma = 5$ minutes.  We can visualise the Normal pdf using the example code below. 
+
+```{r}
+time.mean = 20
+time.sd = 5
+
+ggplot(data.frame(x = c(0, 40)), aes(x = x)) +
+  stat_function(fun = dnorm, args = list(mean = time.mean, sd = time.sd)) +
+  ylab("f(x)") + xlab('x = commute time in minutes') +
+  labs(title = "Normal PDF with mean = 20 and sd = 5")
+```
+
+
+Using the plot above, you can get a sense how much time you may need to spend to get to the university. In particular, you can see that the most common times are around 20 minutes, with it being rare to take less than 10 minutes or longer than 30 minutes.
+
+
+**Task:** The mean weight of 500 male students at a certain college is 70 kg and the standard deviation is 7 kg. Assuming the weights are (approximately) normally distributed, plotr the probability density function of the weights.
+
+```{r}
+# write your code here
+
+
+
+
+```
+
+
+## Calculating Probabilities for Normal
+
+For the commute to university example, we can answer different questions related to the random variable $X$ (commuting time). For example, we can find the probability of making it to the university in 10 minutes or less. In probability notation, we need to find $P(X \le 10)$. As you can recognize, this is a cumulative probability. For calculating the cumulative probability for a Normal distribution we have an $\texttt{R}$ function `pnorm()`. 
+
+```{r}
+# to find P(X <= 10)
+pnorm(q = 10, mean = 20, sd = 5)
+
+```
+We can also visualise this probability using the `geom_area` function, to plot a shaded region over a certain range on the x-axis specified by `xlim`.
+
+```{r}
+time.mean = 20
+time.sd = 5
+
+ggplot(data.frame(x = c(0, 40)), aes(x = x)) +
+  stat_function(fun = dnorm, args = list(mean = time.mean, sd = time.sd)) +
+  ylab("f(x)") + xlab('x = commute time in minutes') +
+  labs(title = "Normal PDF with mean = 20 and sd = 5") + 
+  geom_area(stat = "function", fun = dnorm, args = list(mean = time.mean, sd = time.sd),
+            fill = "lightblue", xlim = c(0, 10))
+```
+
+
+**Task:** For the student weight example, find the probability that a randomly chosen male student has weight less than 65kg. Then produce a graph visualising this cumulative probability.
+
+```{r}
+# write your code here
+
+
+
+
+```
+
+For the commute example, what if we are interested to know the probability that it takes more than 25 minutes to get to the university. In probability notation, we need to find $P(X \ge 25)$. Using complement rule we can write that $P(X \ge 25) = 1 - P(X \le 25)$.
+
+```{r}
+# to find P(X >= 25) = 1 - P(X <= 25)
+1 - pnorm(q = 25, mean = 20, sd = 5)
+
+# alternatively, we can directly calculate P(X >= 25)
+# using the lower.tail = FALSE
+pnorm(q = 25, mean = 20, sd = 5, lower.tail = FALSE)
+
+```
+Now visualise this on the density graph. We also need two layers for this. The first one is the density graph and the second one is for the probability $P(X \ge 25)$
+
+```{r}
+time.mean = 20
+time.sd = 5
+
+ggplot(data.frame(x = c(0, 40)), aes(x = x)) +
+  stat_function(fun = dnorm, args = list(mean = time.mean, sd = time.sd)) +
+  ylab("f(x)") + xlab('x = commute time in minutes') +
+  labs(title = "Normal PDF with mean = 20 and sd = 5") + 
+  geom_area(stat = "function", fun = dnorm, args = list(mean = time.mean, sd = time.sd),
+            fill = "lightblue", xlim = c(25, 40))
+```
+
+**Task:** For the student weight example, find out the probability that a random chosen male student has weight more than 79kg. Then produce a graph visualising this probability.
+
+```{r}
+# write your code here
+
+
+
+
+```
+
+Now we can answer a more complex question such as what is the probability of making it to work in between 10 and 15 minutes. In probability notation we can write this down as $P(10 \le X \le 15)=$? We can break this quantity into simpler pieces for computational convenience, i.e.  $P(10 \le X \le 15) = P(X \le 15) - P(X \le 10)$. 
+
+```{r}
+# to calculate P(10 <= X <= 15) = P(X <= 15) - P(X <= 10)
+pnorm(q = 15, mean = 20, sd = 5) - pnorm(q = 10, mean = 20, sd = 5)
+
+```
+Let's visualise this as before!
+
+
+```{r}
+time.mean = 20
+time.sd = 5
+
+ggplot(data.frame(x = c(0, 40)), aes(x = x)) +
+  stat_function(fun = dnorm, args = list(mean = time.mean, sd = time.sd)) +
+  ylab("f(x)") + xlab('x = commute time in minutes') +
+  labs(title = "Normal PDF with mean = 20 and sd = 5") + 
+  geom_area(stat = "function", fun = dnorm, args = list(mean = time.mean, sd = time.sd),
+            fill = "lightblue", xlim = c(10, 15))
+```
+
+
+**Task:** For the student weight example, find the probability that a randomly chosen male student has weight between 65 kg and 80 kg. Then produce a graph visualising this probability.
+
+```{r}
+# write your code here
+
+
+
+
+```
+
+
+## Empirical rule (68–95–99.7 rule)
+
+The empirical rule says that if a random variable $X \sim N(\mu, \sigma^2)$  then the following are true:
+
+\begin{align}
+P(\mu - 1 \sigma \le X \le \mu + 1 \sigma) &\approx 68.27 \%  \\
+P(\mu - 2 \sigma \le X \le \mu + 2 \sigma) &\approx 95.45 \% \\
+P(\mu - 3 \sigma \le X \le \mu + 3 \sigma) &\approx 99.73 \% \\
+\end{align}
+
+where $\approx$ means approximately equal to. Now we can show this using $\texttt{R}$ for the commute example.
+
+```{r}
+time.mean = 20
+time.sd = 5
+
+ggplot(data.frame(x = c(0, 40)), aes(x = x)) +
+  stat_function(fun = dnorm, args = list(mean = time.mean, sd = time.sd)) +
+  ylab("f(x)") + xlab('x = commute time in minutes') +
+  labs(title = "Empirical Rule with mean = 20 and sd = 5") + 
+  geom_area(stat = "function", fun = dnorm, args = list(mean = time.mean, sd = time.sd),
+            fill = "lightblue", xlim = c(0, 40)) + 
+  geom_area(stat = "function", fun = dnorm, args = list(mean = time.mean, sd = time.sd),
+            fill = "lightgreen", xlim = c(time.mean - 2*time.sd, time.mean + 2*time.sd)) + 
+  geom_area(stat = "function", fun = dnorm, args = list(mean = time.mean, sd = time.sd),
+            fill = "pink", xlim = c(time.mean - time.sd, time.mean + time.sd))
+```
+
+We can explore data from this Normal distribution. Let's use the `rnorm()` to **simulate** some random numbers from the $N(20,5^2)$ distribution. Here we will simulate 200 commute times. Rerun this Rchunk many times to see the sample variation from one sample to the next.
+
+```{r}
+time.mean = 20
+time.sd = 5
+
+simulated.data = rnorm(200, mean = time.mean, sd = time.sd)
+
+ggplot(data.frame(x = simulated.data)) +
+  geom_histogram(aes(x)) +
+  ylab("f(x)") + xlab('x = commute time in minutes') +
+  labs(title = "Histogram of 200 Commute Times")
+```
+
+Setting a **seed** makes the simulated random numbers reproducible, which is important if you want to share your results with other people. Rerun this Rchunk code a few times and you will see you will get the same results every time, so it is reproducible.
+
+```{r}
+# to make the code reproducible
+set.seed(12345)
+
+time.mean = 20
+time.sd = 5
+
+simulated.data = rnorm(200, mean = time.mean, sd = time.sd)
+
+ggplot(data.frame(x = simulated.data)) +
+  geom_histogram(aes(x)) +
+  ylab("f(x)") + xlab('x = commute time in minutes') +
+  labs(title = "Histogram of 200 Commute Times")
+```
+
+We can use the simulated data to verify the Empirical Rule. To check whether $P(\mu - 1 \sigma \le X \le \mu + 1 \sigma) \approx 68.27 \%$ holds, we are going to generate 1 million random times for the commuting example. Then we are going to calculate what proportion of these generated random times falls within 1 standard deviation of the mean, i.e. $15 \le X \le 25$
+
+```{r}
+# to make the code reproducible
+set.seed(1234)
+
+time.mean = 20
+time.sd = 5
+
+# generating 1 million values of the random variable
+commute = rnorm(1000000, mean = time.mean, sd = time.sd)
+
+# create a vector containing TRUE if the value falls
+# within (15 <= X <= 25) and FALSE otherwise
+commute_1sd = (commute >= 15 & commute <= 25)
+
+# now find out what proportion falls within 1 standard deviation of the mean
+# Note: sum(), mean(), etc. summary functions convert TRUE to 1 and FALSE to 0
+sum(commute_1sd) / length(commute_1sd)
+
+# alternatively a proportion is the same as the mean of 0 and 1's
+mean(commute_1sd)
+```
+So we have demonstrated the first empirical rule in the commuting example.
+
+**Task:** For the commute example, show that $P(\mu - 2 \sigma \le X \le \mu + 2 \sigma) \approx 95.45$ and $P(\mu - 3 \sigma \le X \le \mu + 3 \sigma) \approx 99.73$.
+
+```{r}
+# write your code here
+
+
+
+
+```
+
+
+## Calculating Quantiles for the Normal distribution
+
+So far we calculated interval probabilities for a random variable with a Normal probability distribution. The random variable is denoted by capital letters, eg  $X$ and a particular value is denoted by lower case letters, eg $x$. The notation $P(X \le x)$, means the probability the the random variable $X$ is smaller than a particular value, $x$.  For $p = P(X \le x)$, we refer to $x$ as the $p^{th}$ **quantile** of $X$. When we used the `pnorm()` function, we supplied a value for the `q` argument. (There is no `x` argument for the `pnorm()`.) Using the `pnorm()` function we calculated probabilities for a given quantile `q`. Now, we do the opposite, for a given cumulative probability, we will find the quantile - ie find $q$ when we know the value of $p = P(X \leq q)$. We will use $\texttt{R}$ function `qnorm()` to calculate the quantile for a given cumulative probability, which will be supplied to the `qnorm()` with the argument `p`.
+
+For the commute example, we may calculate the time that 90% of commutes are shorter than (ie the 0.9th quantile of the time variable). In this situation the cumulative probability is given, i.e. $P(X \le x) = 0.9$. Now we have to find the $x$ that satisfies this.
+
+```{r}
+# to find x that satisfies P(X <= x) = 0.9
+qnorm(p = 0.9, mean = 20, sd = 5)
+
+# we can verify this value is correct
+pnorm(q = 26.40776, mean = 20, sd = 5)
+
+```
+
+So 90% of the time, we need 26.41 minutes or less to go to the university for the commute example. 
+
+**Task:** For the weight example, if 70% of the male students weigh less than k kg, calculate k.
+
+```{r}
+# write your code here
+
+
+
+
+```
+
+
+## Standard Normal Variable (Z-score)
+
+If $X \sim N(\mu, \sigma^2)$ then we can compute a new random variable $Z$ as follows:
+
+$$ Z = \frac{X - \mu}{\sigma}$$
+This new random variable $Z$ follows $N(0, 1)$. Sometimes the values of $Z$ are referred to as z-scores. If you want to calculate the probabilities we calculated above in R by hand and using the Standard Normal (Z)-table, you have to transform your Normal random variable to a Standard Normal and then look up values in the Standard Normal table. For the `dnorm()`, `rnorm()`, `pnorm()`, and `qnorm()` functions the default value of the `mean` argument is `0` and for the `sd` argument is `1`. So if you calculate the z-score first then you do not need to specify those arguments. 
+
+
+```{r}
+# the z-score to calculate P( X <= 15)
+z = (15 - 20) / 5
+z
+
+# so P( X <= 15) = P( Z <= -1)
+pnorm(q = -1)
+
+# we can verify this
+pnorm(q = 15, mean = 20, sd = 5)
+
+```
+
+**Task** Using the transformation to Standard Normal, find the probability of $P(X \le 10)$ for a Normally distributed random variable with $\mu = 7$ and $\sigma = 3$. 
+
+```{r}
+# write your code here
+
+
+
+
+```
+
+## Normal Approximation to Binomial Distribution
+
+For certain situations, we can calculate approximately the probabilities for random variables with Binomial Poisson distributions using a Normal distribution.
+
+So if $X \sim \text{Binomial}(n, p)$ with $np > 5$ and $n(1-p) > 5$ then, $X$ approximately follows $N(np, np(1-p))$. 
+
+### Example:
+A new vaccine was tested on 100 persons to determine its effectiveness. The claim of
+the drug company is that a random person who is given the drug will develop immunity
+with probability 0.8. We can use the Normal approximation to the Binomial distribution to find the probability that fewer than 74 people will develop immunity as follows:
+
+```{r}
+# here
+n <- 100
+p <- 0.8
+
+# to check whether we can use the Normal approximation
+(n * p > 5) & (n * (1 - p) > 5)
+
+# to find P(X < 74) with continuity correction
+pnorm(q = 73.5, mean = (n * p), sd = sqrt(n * p * (1 - p)))
+
+# to verify
+pbinom(q = 73, size = n, prob = p)
+
+```
+
+**Task:** Only one in a million people get to visit North Korea. If ten million people are chosen at random, use the Normal approximation to the Binomial to calculate the probability that at least 12 of them will have visited North Korea.
+
+```{r}
+# write your code here
+
+
+
+
+```
+
+## Normal approximation to Poisson distribution
+
+If $X \sim \text{Poisson}(\lambda)$ with $\lambda > 5$ then, $X$ approximately follows $N(\lambda, \lambda)$. 
+
+
+Consider a situation where the number of cars that exit from a car park in any given hour is known to be Poisson distributed with a mean of $\lambda = 25$. Using the Normal approximation to the Poisson distribution, we can calculate the probability that 30 or more cars exit in a given hour as follows:
+
+```{r}
+# here
+lambda <- 25
+
+# to check whether we can use normal approximation
+lambda > 5
+
+# to calculate P(X >= 30) with continuity correction
+1 - pnorm(q = 30.5, mean = lambda, sd = sqrt(lambda))
+
+# to verify
+1 - ppois(q = 30, lambda = lambda)
+
+```
+**Task:** In the experiment by Rutherford and Geiger the mean number of $\alpha$–particles emitted by a radioactive source during 7.5 seconds was found to be 3.9. Assuming that the
+number of $\alpha$–particles emitted has a Poisson distribution, what is the probability that during a 4 minute period the source will emit 200 or more $\alpha$–particles. Hint: you need to calculate the value of $\lambda$ for 4 minute period first.
+
+```{r}
+# write your code here
+
+
+
+
+```
+
+## Checking if data are Normal
+
+Later on in this course we will use some inferential statistical methods to draw conclusions about the population based on the samples. For some of the inferential methods, we will be assuming that the variable follows a Normal distribution. So we need to know how to verify whether our assumption of normality regarding the variable is justified or not. There are many ways to do this, but a the simplest way is to use a histogram of the data as a rough check of whether the normality assumption looks plausible or not.
+
+Height and weight of 236 school going children were collected and stored in a data set `heightweight` from the $\texttt{R}$ package `gcookbook`. The description of the variables are as follows:
+
+    sex     : gender of the children
+    ageYear : Age in years.
+    ageMonth: Age in months.
+    heightIn: Height in inches.
+    weightLb: Weight in pounds.
+
+Let's draw a histogram to check whether we can assume that height (`heightIn`) of the school children follows a Normal distribution or not. 
+
+```{r}
+library(gcookbook)
+
+heightweight %>%
+  ggplot(aes(x = heightIn)) +
+  geom_histogram(binwidth = 2) +
+  labs(x = "Height of the children (in inches)") +
+  theme_minimal()
+```
+
+From the histogram, we can see that the assumption that height follows a Normal distribution is plausible.
+
+**Task** Using a histogram, check if the weight (`weightLb`) follows a Normal distribution or not.
+
+```{r}
+# write your code here
+
+
+
+
+```
+
+
+
