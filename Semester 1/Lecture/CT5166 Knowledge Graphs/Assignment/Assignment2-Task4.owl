@@ -1,0 +1,336 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#"
+     xml:base="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Week -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Week">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccinationRecord"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccinationRecord"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#AstraZeneca -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#AstraZeneca">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccineType"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#ExtractDate -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#ExtractDate">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccinationRecord"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Female -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Female">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Gender"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#FullCum_Age0to9 -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#FullCum_Age0to9">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#FullyVaccinated"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#FullPer_Age0to9 -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#FullPer_Age0to9">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#FullyVaccinated"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Fully_Age0to9 -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Fully_Age0to9">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#FullyVaccinated"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Janssen -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Janssen">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccineType"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Male -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Male">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Gender"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Moderna -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Moderna">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccineType"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#NA -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#NA">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Gender"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#ParCum_Age0to9 -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#ParCum_Age0to9">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#PartiallyVaccinated"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#ParPer_Age0to9 -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#ParPer_Age0to9">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#PartiallyVaccinated"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Partial_Age0to9 -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Partial_Age0to9">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#PartiallyVaccinated"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Pfizer -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Pfizer">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccineType"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#TotalweeklyVaccines -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#TotalweeklyVaccines">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccinationRecord"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#X -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#X">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccinationCenter"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Y -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Y">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccinationCenter"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#AgeGroup -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#AgeGroup">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccinationRecord"/>
+        <owl:disjointWith rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Gender"/>
+        <owl:disjointWith rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccineType"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#FullyVaccinated -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#FullyVaccinated">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#AgeGroup"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Gender -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Gender">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccinationRecord"/>
+        <owl:disjointWith rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccineType"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#PartiallyVaccinated -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#PartiallyVaccinated">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#AgeGroup"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccinationCenter -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccinationCenter"/>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccinationRecord -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccinationRecord">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccinationCenter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccineType -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccineType">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccinationRecord"/>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Age0to9 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Age0to9">
+        <rdf:type rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#AgeGroup"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Female -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Female">
+        <rdf:type rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Gender"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Moderna -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#Moderna">
+        <rdf:type rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccineType"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VC1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VC1">
+        <rdf:type rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccinationCenter"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VR1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VR1">
+        <rdf:type rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#VaccinationRecord"/>
+        <Week rdf:resource="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#2020-W53"/>
+        <AstraZeneca rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</AstraZeneca>
+        <ExtractDate>2022-10-03 00:00:00</ExtractDate>
+        <Female rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2736</Female>
+        <Janssen rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</Janssen>
+        <Male rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1230</Male>
+        <Moderna rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</Moderna>
+        <NA rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</NA>
+        <ParCum_Age0to9 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</ParCum_Age0to9>
+        <ParPer_Age0to9 rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.000002</ParPer_Age0to9>
+        <Partial_Age0to9 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</Partial_Age0to9>
+        <Pfizer rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4002</Pfizer>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#2020-W53 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/zhejing/ontologies/2022/9/assignment2-task4#2020-W53"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+
