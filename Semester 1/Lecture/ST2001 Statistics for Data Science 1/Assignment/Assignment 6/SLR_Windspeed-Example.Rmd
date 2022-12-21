@@ -1,0 +1,185 @@
+---
+title: "Simple Linear Regression Example Template - Windfarms"
+author: "name, id=11111111"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document: default
+---
+
+Windfarms are used to generate direct current. Data are collected on 34 different days to determine the relationship between wind speed in mi/h and current in kA.
+
+Response Variable:		current in kA
+Explanatory Variable:	wind speed in mi/h
+
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+library(tidyverse)
+```
+
+### Read in the data and see a few rows
+
+```{r}
+windspeed.df = read.csv("windspeed.csv", header = TRUE)
+head(windspeed.df)
+```
+
+### Summary Statistics
+
+```{r}
+windspeed.df %>% 
+            summarize(Mean.Current = mean(Current), 
+                      SD.Current = sd(Current),
+                      Mean.Windspeed = mean(Wind.Speed), 
+                      S.Windspeed = sd(Wind.Speed))
+```
+
+How would you interpret/describe these results?
+
+### Scatterplot
+
+
+```{r}
+
+ggplot(windspeed.df, aes(y = Current, x = Wind.Speed)) + 
+  geom_point() +
+  labs(x = "Wind.Speed (mi/h)", y = "Current(kA)", 
+       title = "Scatterplot of Windspeed and Current")
+
+```
+
+How would you interpret/describe this graph?
+
+### Scatterplot with smoother.
+
+```{r}
+
+ggplot(windspeed.df, aes(y = Current, x = Wind.Speed)) + 
+  geom_point() +
+  geom_smooth() +
+  labs(x = "Wind.Speed (mi/h)", y = "Current(kA)", 
+       title = "Scatterplot with Lowess Smoother")
+
+```
+
+What does the smoother suggest about the suitability of a simple linear regression model in this application?
+
+
+## Correlation coefficient
+
+
+```{r}
+
+windspeed.df %>% select (Current, Wind.Speed) %>% cor()
+ 
+```
+
+How would you interpret/describe this correlation?
+
+## Scatterplot with line of best fit
+
+```{r}
+
+ggplot(windspeed.df, aes(y = Current, x = Wind.Speed)) + 
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(x = "Wind.Speed (mi/h)", y = "Current(kA)", 
+       title = "Scatterplot with Line of Best Fit")
+
+```
+
+How would you interpret/describe the fitted line and confidence intervals?
+
+### Fitting a Simple Linear Regression Model
+  
+Fit a simple linear regression model in R using `lm`:
+
+```{r}
+
+windspeed.model = lm(Current ~ Wind.Speed, windspeed.df)
+windspeed.model
+
+
+```
+
+## Equation of line of best fit
+
+You should be able to write down the equation of the line of best fit and provide an interpretation of the slope and intercept. In each application, be aware as to whether the intercept has a meaningful interpretation.
+
+
+# Make some predictions
+
+```{r}
+Wind_new = data.frame(
+  Wind.Speed = c(5, 5.5, 6, 7,8,9)
+)
+
+```
+
+```{r}
+
+predict(windspeed.model, newdata = Wind_new, interval = "confidence")
+
+```
+
+Can you explain what the `fit`, `lwr` and `upr` represent and how to intepret them?  Note by default a 95% CI
+
+
+```{r}
+
+predict(windspeed.model, newdata = Wind_new, interval = "prediction")
+
+```
+
+Can you explain what the `fit`, `lwr` and `upr` represent and how to intepret them? How are they different to the confidence intervals above?  As above the default is a 95% PI
+
+
+# Plot with confidence and prediction intervals
+
+```{r}
+
+pred.int = predict(windspeed.model, newdata = windspeed.df, interval = "prediction")
+
+windspeed.df2 = cbind(windspeed.df, pred.int) # store predictions alongside original dataset
+
+ggplot(windspeed.df2, aes(y = Current, x = Wind.Speed)) +
+  geom_point() +
+  stat_smooth(method = lm) + # this includes a confidence interval
+  geom_line(aes(y = lwr), color = "red", linetype = "dashed") + #  Add prediction intervals
+  geom_line(aes(y = upr), color = "red", linetype = "dashed") +
+  labs(x = "Wind.Speed (mi/h)", y = "Current(kA)", 
+       title = "Scatterplot with line of best fit and 95% confidence and prediction intervals")
+
+```
+
+How would you interpret the fitted line and prediction intervals?
+
+
+# Safe prediction
+
+Suppose we want to predict the produced current when the wind speed is 6.6 mi/h.
+
+```{r}
+
+predict(windspeed.model, newdata = data.frame(Wind.Speed = 6.6))
+
+```
+
+
+Comment on why the predicted current here is different from the **observed** value of the current (2.2kA) when the the wind speed was 6.6 mi/h.
+
+Predict the current when the wind speed is 20 mi/h by inserting the relevant R chunk below. Would you have any reason to be concerned about making such a prediction? 
+
+```{r}
+
+predict(windspeed.model, newdata = data.frame(Wind.Speed = 20))
+
+```
+
+
+### Overall Conclusion 
+
+You should summarise the conclusions from the above analysis.
+
+
+
+

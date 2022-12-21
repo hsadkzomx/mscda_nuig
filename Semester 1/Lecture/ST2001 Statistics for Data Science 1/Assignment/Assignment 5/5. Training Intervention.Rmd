@@ -1,0 +1,279 @@
+---
+title: "Training Intervention Analysis"
+author: "Zhe JingChin, id=22221970"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document: default
+---
+
+```{r include=FALSE}
+library(infer)
+library(tidyverse)
+library(tolerance)
+```
+
+## Context: Celtic Study
+
+A sample of 18 full-time youth soccer players from a Youth Academy performed high intensity aerobic interval training over a 10-week in-season period in addition to usual regime of soccer training and matches. 
+
+**The aim** of this study to find if this extra training improves V_IFT, the maximum velocity (km/hr) achieved in an intermittent fitness test (`VIFT_Pre` vs `VIFT_Post`)?
+
+This is a **paired design:** each player's V_IFT measured before and after the training intervention (i.e. start and after 10 weeks)
+
+A scaffold for the analysis with the response variable VO2 max is provided below. You need to rerun the analysis using the V_IFT variables (i.e. `VIFT_Pre` vs `VIFT_Post`) to answer the question of interest: is there, on average, an improvement in V_IFT?   To assess the evidence, you will provide confidence intervals, and other statistical inference,  for the mean improvement of players in the population (eg of future youth soccer players under the same training intervention).
+
+
+To answer the question of interest, provide a detailed response for all of the tasks asked below using the V_IFT variables (i.e. `VIFT_Pre` vs `VIFT_Post`).
+
+
+Task: State the appropriate null and alternative hypotheses for the V_IFT study.
+
+#' Null hypothesis: The extra high intensity aerobic training does not affect V_IFT of full-time youth soccer players from a Youth Academy.
+mu is the mean improvement of the interest population
+
+### H0: mu = 0
+
+#' Alternative hypothesis: The extra high intensity aerobic training does affect V_IFT of full-time youth soccer players from a Youth Academy, VIFT_Post higher than VIFT_Pre.
+
+### H1: mu != 0
+
+We decide a priori we will reject H0 if the p-value is <0.05.
+
+Task: Define a Type I and Type II error and discuss the implication of making these
+errors in this study.
+
+#' Type I error: There is no difference between VIFT_Pre and VIFT_Post of a player, but study falsely indicate that the player has achieved a different VIFT_Post than VIFT_Pre
+
+#' Type II error: The VIFT_Post and VIFT_Pre of a player is different, but study falsely indicate that the player has no improvement between VIFT_Pre and VIFT_Post.
+
+If Type I error rate is high, then players are getting unnecessary trainings that did not help to improve their performance hence time wasted.
+
+If Type II error rate is high, then players might be missing trainings that help to improve their performance. 
+
+## Read in the training intervention data
+
+Read in the data and have a look at the variable names and structure of the data.
+
+```{r}
+train.df <- read.csv("Training_intervention_data.csv")
+glimpse(train.df)
+```
+
+## Focus on the V_IFT response variables
+
+## Summary Statistics
+
+```{r}
+train.df %>% select(VO2.max_Pre,VO2.max_Post) %>% summary()
+```
+
+Task: Interpret!
+
+```{r}
+train.df %>% select(VIFT_Pre,VIFT_Post) %>% summary()
+```
+
+The overall statistics of VIFT_Post has increased compared to VIFT_Pre.
+
+## Mean and Standard Deviation
+
+```{r}
+train.df %>% select(VO2.max_Pre,VO2.max_Post) %>%
+            summarize(Pre_Mean=mean(VO2.max_Pre), Pre_SD= sd(VO2.max_Pre),
+                      Post_Mean=mean(VO2.max_Post), Post_SD= sd(VO2.max_Post))
+```
+
+Task: Interpret!
+
+```{r}
+train.df %>% select(VIFT_Pre,VIFT_Post) %>%
+            summarize(Pre_Mean=mean(VIFT_Pre), Pre_SD= sd(VIFT_Pre),
+                      Post_Mean=mean(VIFT_Post), Post_SD= sd(VIFT_Post))
+```
+The mean of maximum VIFT_Post has increased slightly compared to the VIFT_Pre while maintaining a similarly low standard deviation, showing that the majority of the players did achieve a maximum of post VIFT at 28km/h.
+
+## Scatterplot of Pre and Post with line of equality
+
+```{r}
+train.df %>% ggplot(aes(x = VO2.max_Pre, y = VO2.max_Post)) +
+        geom_point() + 
+  ggtitle("Scatterplot of Pre and Post VO2 Max") +
+  ylab("Post VO2 Max (ml/kg min)") +
+  xlab("Pre VO2 Max (ml/kg min)") +
+  geom_abline(slope=1, intercept=0)
+  
+```
+
+Task: Interpret!
+
+```{r}
+train.df %>% ggplot(aes(x = VIFT_Pre, y = VIFT_Post)) +
+        geom_point() + 
+  ggtitle("Scatterplot of Pre and Post VIFT Max") +
+  ylab("Post VIFT Max (km/hr)") +
+  xlab("Pre VIFT Max (km/hr)") +
+  geom_abline(slope=1, intercept=0)
+  
+```
+
+The scatter plot shows a moderate, positive, linear relationship between VIFT_Pre and VIFT_Post. As VIFT_Pre increases, so does VIFT_Post but the points are not too close to the slope.
+
+
+## Calculate the Improvement in V_IFT
+
+Calculate a new variable, "improvement", and have a look at the data frame to see that it has been created.  High values of VO2 max are good so Post-Pre is a better measure than Pre-Post to capture this - what about V_IFT?
+
+```{r}
+
+train.df <- train.df %>% mutate(Improvement = VIFT_Post-VIFT_Pre) %>%
+              glimpse()
+  
+
+
+```
+
+
+## Mean and Standard Deviation of Improvement in V_IFT
+
+```{r}
+
+train.df %>% select(Improvement) %>%
+            summarize(Imp_Mean=mean(Improvement), Imp_SD= sd(Improvement))
+
+```
+
+Task: Interpret!
+
+The improvement mean shows that there's only a low improvement in VIFT after the extra training. While the high standard deviation is showing that only few of the players did achieve improvement around 2km/h.
+
+
+## Boxplot of Improvement in V_IFT
+
+```{r}
+
+
+train.df %>% ggplot(aes(x = "", y = Improvement)) +
+        geom_boxplot() + 
+  ggtitle("Boxplot of Improvement in VIFT Max") +
+  ylab("Improvement in VIFT Max (km/h)") +
+  xlab("") +
+  coord_flip()
+
+```
+
+Task: Interpret!
+
+The boxplot shows that there are some players has 0 or negative improvement on VIFT after the extra training with lower whisker extended to below 0. However, there are some players achieved improvement more than the average of 2km/h. The boxplot also shows a rather right skewed distribution. As we only have 18 samples, hence the boxplot might not be reliable to visualise the distribution.
+
+
+## 95% Confidence Interval Using the t.test function
+
+```{r}
+
+train.df %>% select(Improvement) %>% t.test()
+
+```
+
+Task: Based on the output given answer the following questions:
+
+* What is the mean improvement in V_IFT the population of interest? Interpret the relevant 95% Confidence Interval carefully.
+
+The 95% confidence interval shows that we are 95% confidence that of all full-time youth soccer players from the same Youth Academy who have the training intervention should have a mean of VIFT improvement between 1.15km/h to 2.97km/h.
+
+* Use the relevant interval estimate and p-value to decide whether there is sufficient evidence in the sample provided to claim that there is any improvement on average in V_IFT in the population of interest.
+
+The probability of observing such data (or more extreme data) if the null hypothesis is true is about 0.0001736.
+It indicates strong evidence (at the 5% significance level) against the null hypothesis hence we should reject the null hypothesis and accept the alternative hypothesis that there are improvement on average in VIFT. Besides, the 95% confidence interval is showing that there's no evidence supporting the mean of improvement to be 0, hence we could reject the null hypothesis.
+
+* What are the assumptions underlying the one sample t-test presented?
+
+As the sample set is small (<30), hence we are performing a t-test. The assumptions presented are there are no significant outliers in the mean improvement and the improvement is approximately distributed normally. The observations are assumed to be independent from each others too. 
+
+* Explain why or why not the assumptions seem justified based on the output provided.
+
+Based on the boxplot, the assumption of there are no significant outliers is justified. However, the p-value is < 0.05 hence the data is not normally distributed.
+
+## 95% Bootstrap CI for the mean
+
+```{r}
+
+boot <- train.df %>%
+  specify(response = Improvement) %>%
+  generate(reps = 1000, type = "bootstrap") %>%
+  calculate(stat = "mean")
+
+percentile_ci <- get_ci(boot)
+round(percentile_ci,2)
+
+```
+
+Task: Interpret!
+
+We generate bootstrap samples and calculate their mean for 1000 times and we get the results of 95% of the time, the average VIFT improvement falls between 1.27km/h to 2.88km/h.
+
+```{r}
+boot %>% visualize()+
+  shade_confidence_interval(endpoints = percentile_ci) +
+                   xlab("Bootstrap Mean") + ylab("Frequency")
+
+```
+
+Task: Interpret!
+
+The bootstrap distribution of the mean seems to be normal hence we could possibly trust the results of bootstrap mean.
+
+## 95% Bootstrap CI for the median improvement
+
+```{r}
+
+boot.median <- train.df %>%
+  specify(response = Improvement) %>%
+  generate(reps = 1000, type = "bootstrap") %>%
+  calculate(stat = "median")
+
+percentile_ci_median <- get_ci(boot.median)
+round(percentile_ci_median,2)
+
+```
+
+Task: Interpret!
+
+We generate bootstrap samples and calculate their median for 1000 times and we get the results of 95% of the time, the average VIFT improvement falls between 0.8km/h to 3.1km/h.
+
+
+```{r}
+boot.median %>% visualize()+
+  shade_confidence_interval(endpoints = percentile_ci_median) +
+                   xlab("Bootstrap Median") + ylab("Frequency")
+
+```
+
+Task: Interpret!
+
+The bootstrap distribution of the median is bimodal hence we cannot trust the results of bootstrap median. We might need to increase the sample size to get a normally distributed data.
+
+
+
+## 95% Tolerance Interval (Bonus Question)
+
+Calculate a 95% tolerance interval covering 95% of V_IFT improvement values 
+
+```{r}
+
+normtol.int(train.df$Improvement, alpha = 0.05, P = 0.95, side=2)
+
+```
+
+Task: Interpret!
+
+We can be 95% confident that 95% of full-time youth soccer players from a Youth Academy who have the training intervention will achieve VIFT improvement between -3.12km/h and 7.24km/h
+
+
+## Overall Conclusion 
+Task: state your overall conclusion. 
+
+In conclusion, there's enough evidence to support our alternative hypothesis of full-time youth soccer players from a Youth Academy who have the training intervention could possibly improve the VIFT with an average of 1.15km/h to 2.97km/h. However, we computed the test results with a small dataset that is not normally distributed. Hence we ran bootstrap mean to generate a larger dataset that distributed normally to find out that we are confident that 95% of the population would improvement VIFT after the extra training with an average of 1.27km/h to 2.88km/h. However, the confidence interval is targeting to find out the true mean for the population, hence we compute the tolerance interval to find out that we are confident that 95% of the population would achieve a negative or positive improvement on VIFT between -3.12km/h and 7.24km/h.
+ 
+
+
+

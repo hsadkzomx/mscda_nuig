@@ -1,0 +1,232 @@
+---
+title: "Simple Linear Regression Assignment"
+author: "Zhe Jing Chin, id=22221970"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Predicting 3 km Running Times based on laboratory testing.
+
+### Study Description: 
+Sixteen well-trained male middle and long distance runners performed a 3 km time trial and a number of running tests in the laboratory including their running velocity at a blood lactate concentration of 4 mmol.l-1 (v4mM).  Other variables measured were running velocity at their Lactate Threshold (vTlac), and VO2 max. All the laboratory testing took place on a motorised treadmill, and distance running performance was determined by 3 km time trials on an indoor 200m track.
+
+### Aims: 
+To investigate whether there is we can use linear regression to predict 3 km running time (minutes) from v-4mM (km per hour) in the population of well-trained male middle and long distance runners.  Hence to predict 3km running time using running velocity at blood lactate concentration 4 mmol per litre.
+
+- Response Variable:		3km running time (`Running.Time`) measured in minutes
+
+- Explanatory Variable:	running velocity at blood lactate concentration at 4mmol per litre (`v4mM`) measured in km/hr
+
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+library(tidyverse)
+```
+
+### Read the data and see a few rows
+
+```{r}
+running = read.csv("3krunning.csv", header = TRUE)
+head(running)
+```
+
+### Summary Statistics
+
+Task: Calculate the summary statistics for each column in the data and describe the key features of the data. 
+
+```{r}
+running %>% 
+            summarize(Mean.v4mM = mean(v4mM), 
+                      SD.v4mM = sd(v4mM),
+                      Mean.runningTime = mean(Running.Time), 
+                      SD.runningTime = sd(Running.Time))
+```
+
+The observations have an average 3km running time of 9.46 minutes, and an average running velocity at blood lactate concentration 4 mmol per litre at nearly 17.07 km/h. With the small standard deviation for both, the observations are clustered around the mean.
+
+### Scatterplot
+
+Task: Make a labelled scatterplot of `v4mM` vs `Running.Time` and interpret it.
+
+```{r}
+
+ggplot(running, aes(y = Running.Time, x = v4mM)) + 
+  geom_point() +
+  labs(y = "Running.Time (min)", x = "v4mM(km/h)", 
+       title = "Scatterplot of v4mM and Running Time")
+
+```
+
+It seems like a strong but negative relationship between the running time and v4mM.
+
+### Scatterplot with smoother.
+
+Task: Add a smooth line to the scatter plot produced in the previous task, and include the new plot below.
+
+```{r}
+
+ggplot(running, aes(x = v4mM, y = Running.Time)) + 
+  geom_point() +
+  geom_smooth() +
+  labs(y = "Running.Time (min)", x = "v4mM(km/h)", 
+       title = "Scatterplot with Loess Smoother")
+
+```
+
+
+Task: What does the smoother suggest regarding the suitability of a simple linear regression model for this relationship?
+
+As the smoother is fairly a linear, thus it is suitable to perform a simple linear regression model in this application.
+
+### Correlation coefficient
+
+Task: calculate the correlation coefficient between `v4mM` vs `Running.Time` and interpret it.
+
+```{r}
+
+running %>% select (Running.Time, v4mM) %>% cor()
+ 
+```
+
+A strong negative correlation coefficient of 0.926 is found between the variables. As the value of v4mM decreases, the value of running time increases.
+
+### Scatterplot with line of best fit
+
+Task: Add the line of best fit to the scatter plot produced above and interpret it.
+
+```{r}
+
+ggplot(running, aes(x = v4mM, y = Running.Time)) + 
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(y = "Running.Time (min)", x = "v4mM(km/h)", 
+       title = "Scatterplot with Line of Best Fit")
+
+```
+The best fit line supports the assumption made previously, showing a strong but negative linear relationship between the dependent and independent variable.
+
+### Fitting a Simple Linear Regression Model
+  
+Task: Estimate the parameters of the line of best fit for the linear relationship between 3 km running time and v-4mM in the sample.  This can then be used for inference about the linear relationship in the population of well-trained male middle and long distance runners.
+
+
+```{r}
+
+running.model = lm(Running.Time ~ v4mM, running)
+running.model
+
+
+```
+
+### Equation of line of best fit
+Task: Write down the equation of the line of best fit and also provide an interpretation of the slope and intercept. Does the intercept have a physically meaningful interpretation?
+
+Mean Running Time = 15.8223 + (-0.3729) * v4mM
+
+Slope: A slope of -0.3729 represents the estimated change in running time for every increase of 1 km/h of v4mM. 
+Intercept: If the v4mM is 0km/h, then the model predicts that the running time is approximately 15.8223 minutes
+
+The intercept has no physically meaningful interpretation as a running velocity of 0km/h, or x=0 is not within the scope of observation since no one hasa velocity of 0km/h.
+
+
+### Make some point predictions
+
+Task: Predict the running time (i.e. `Running.Time`) when running speed at blood lactate concentration 4 mmol/litre  (i.e. `v4mM`) are 14, 15, 16, 17, 18, 19 and 20 km per hour. 
+
+```{r}
+v4mM_new = data.frame(
+  v4mM = c(14, 15, 16, 17, 18, 19, 20)
+)
+
+```
+
+```{r}
+
+predict(running.model, newdata = v4mM_new, interval = "confidence")
+
+```
+
+The confidence interval reflects the uncertainty around the mean predictions. As default, a 95% confidence interval is calculated.
+
+fit: the predicted running time for the 7 new v4mM.
+lwr / upr: the lower and upper confidence limits for the expected values, respectively.
+
+For example, the 95% confidence interval associated with a v4mM of 14km/h is (10.292450, 10.912191) minutes. This means that, according to our model, a running velocity at blood lactate concentration 4 mmol per litre of 14 km/h has, on average, a running time ranging between 10.29 and 10.91 minutes.
+
+### Interval estimation for predicted running times
+
+For each of the predictions produce a 95% confidence interval and 95% prediction interval, and interpret the results carefully.
+
+```{r}
+
+predict(running.model, newdata = v4mM_new, interval = "prediction")
+
+```
+
+The prediction interval gives uncertainty around a single value.As default, a 95% prediction interval is calculated.
+
+fit: the predicted running time for the 7 new v4mM.
+lwr / upr: the lower and upper prediction limits for the expected values, respectively.
+
+For example, the 95% prediction interval associated with a v4mM of 14km/h is (9.905285, 11.299356) minutes. This means that, according to our model, 95% of a running velocity at blood lactate concentration 4 mmol per litre of 14 km/h have a running time ranging between 9.91 and 11.30 minutes.
+
+The difference between CI and PI is that PI reflects uncertainty around a single value while CI reflects the uncertainty around the mean prediction values, hence PI normally has wider range than CI. 
+
+### Plots with confidence and prediction intervals
+
+Task: Add the 95% confidence and 95% prediction intervals to the scatter plot with the line of best fit, and interpret.
+
+```{r}
+
+pred.int = predict(running.model, newdata = running, interval = "prediction")
+
+running2 = cbind(running, pred.int) # store predictions alongside original dataset
+
+ggplot(running2, aes(y = Running.Time, x = v4mM)) +
+  geom_point() +
+  stat_smooth(method = lm) + # this includes a confidence interval
+  geom_line(aes(y = lwr), color = "red", linetype = "dashed") + #  Add prediction intervals
+  geom_line(aes(y = upr), color = "red", linetype = "dashed") +
+  labs(x = "v4mM (km/h)", y = "Running Time (mins)", 
+       title = "Scatterplot with line of best fit and 95% confidence and prediction intervals")
+
+```
+
+The plot shows that at each given v4mM, there is 95% of the running time fall between the red-dash lines. It also shows that PI has wider range than CI.
+
+### More prediction
+
+Task: Predict the running time (i.e. `Running.Time`) when running speed at blood lactate concentration 4 mmol/litre (i.e. `v4mM`) is 18.9 km per hour. 
+
+```{r}
+
+predict(running.model, newdata = data.frame(v4mM = 18.9))
+
+```
+
+When running speed at blood lactate concentration 4 mmol/litre (i.e. `v4mM`) is 18.9 km per hour, the running time is 8.78 minutes.
+
+Task: Why is the result here is different from 8.82, the observed running time when running speed at blood lactate concentration 4 mmol/litre (`v4mM`) is 18.9 mmol.l-1? (see observation row 4) 
+
+The linear model contains residuals. The best fit line estimated by the linear model does not represent a perfect predicting algorithm but a line for which the sum of the squared residuals is the smallest. Thus, the prediction might differ from the actual value. 
+
+Task: Predict the running time (i.e. `Running.Time`) when  `v4mM` is 2.6 km per hour. Explain if you have any concern related to this prediction.  
+
+```{r}
+
+predict(running.model, newdata = data.frame(v4mM = 2.6))
+
+```
+
+It is unreasonable as we are extrapolating beyond the data.
+
+### Overall Conclusion 
+
+Task: State your overall conclusions from fitting a linear model for the relationship between 3k running time and the running speed at blood lactate concentration 4 mmol/litre.
+
+There is a strong negative relationship between the 3k running time and the running speed at blood lactate concentration 4 mmol/litre. The linear model shows that when the running speed increases, the running time decreases. We could predict the running time that satisfy this equation: Mean Running Time = 15.8223 + (-0.3729) * v4mM. The predicted value might has residual (different between the prediction and actual value). However, it is not useful to predict an observation that is beyond the data. 
+
